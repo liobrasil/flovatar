@@ -107,6 +107,9 @@ pub contract Flovatar: NonFungibleToken {
                 self.epicCount = epicCount
                 self.legendaryCount = legendaryCount
         }
+        pub fun getComponents(): {String: UInt64} {
+            return self.components
+        }
     }
 
     // The public interface can show metadata and the content for the Flovatar. 
@@ -672,10 +675,22 @@ pub contract Flovatar: NonFungibleToken {
         if let flovatarCollection = account.getCapability(self.CollectionPublicPath).borrow<&{Flovatar.CollectionPublic}>()  {
             for id in flovatarCollection.getIDs() {
                 var flovatar = flovatarCollection.borrowFlovatar(id: id)
+                let flovatarMetadata = flovatar!.getMetadata()
+                let newMetadata = Metadata(
+                            mint: flovatarMetadata.mint,
+                            series: flovatarMetadata.series,
+                            svg: "",
+                            combination: flovatarMetadata.combination,
+                            creatorAddress: flovatarMetadata.creatorAddress,
+                            components: flovatarMetadata.getComponents(),
+                            rareCount: flovatarMetadata.rareCount,
+                            epicCount: flovatarMetadata.epicCount,
+                            legendaryCount: flovatarMetadata.legendaryCount
+                        )
                 flovatarData.append(FlovatarData(
                     id: id,
                     name: flovatar!.getName(),
-                    metadata: flovatar!.getMetadata(),
+                    metadata: newMetadata,
                     accessoryId: flovatar!.getAccessory(),
                     hatId: flovatar!.getHat(),
                     eyeglassesId: flovatar!.getEyeglasses(),
