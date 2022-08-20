@@ -1,14 +1,14 @@
 /*
 
  This contract defines the Flovatar Component Templates and the Collection to manage them.
- While Components are the building blocks (lego bricks) of the final Flovatar, 
+ While Components are the building blocks (lego bricks) of the final Flovatar,
  Templates are the blueprint where all the details and characteristics of each component are defined.
- The main part is the SVG (stored on-chain as a String) and the category that can be one of the following: 
+ The main part is the SVG (stored on-chain as a String) and the category that can be one of the following:
  body, hair, facialHair, eyes, nose, mouth, clothing, accessory, hat, eyeglasses, background.
 
  Templates are NOT using the NFT standard and will be always linked only to the contract's owner account.
 
- Each templates will also declare in advance the maximum amount of mintable components, so that 
+ Each templates will also declare in advance the maximum amount of mintable components, so that
  the scarcity can be enforced by the smart contract itself and so that different rarities can be guaranteed.
 
  Finally, Templates are organized in Series, so that in the future it will be possible to create new editions
@@ -32,8 +32,8 @@ pub contract FlovatarComponentTemplate {
     pub event ContractInitialized()
     pub event Created(id: UInt64, name: String, category: String, color: String, maxMintableComponents: UInt64)
 
-    // The public interface providing the SVG and all the other 
-    // metadata like name, category, color, series, description and 
+    // The public interface providing the SVG and all the other
+    // metadata like name, category, color, series, description and
     // the maximum mintable Components
     pub resource interface Public {
         pub let id: UInt64
@@ -99,7 +99,7 @@ pub contract FlovatarComponentTemplate {
             self.ownedComponentTemplates <- {}
         }
 
-        
+
 
         // deposit takes a Component Template and adds it to the collections dictionary
         // and adds the ID to the id array
@@ -140,7 +140,7 @@ pub contract FlovatarComponentTemplate {
     }
 
 
-    // This struct is used to send a data representation of the Templates 
+    // This struct is used to send a data representation of the Templates
     // when retrieved using the contract helper methods outside the collection.
     pub struct ComponentTemplateData {
         pub let id: UInt64
@@ -180,7 +180,7 @@ pub contract FlovatarComponentTemplate {
         }
     }
 
-    // Get all the Component Templates from the account. 
+    // Get all the Component Templates from the account.
     // We hide the SVG field because it might be too big to execute in a script
     pub fun getComponentTemplates() : [ComponentTemplateData] {
         var componentTemplateData: [ComponentTemplateData] = []
@@ -237,7 +237,7 @@ pub contract FlovatarComponentTemplate {
     access(account) fun setTotalMintedComponents(id: UInt64, value: UInt64) {
         FlovatarComponentTemplate.totalMintedComponents[id] = value
     }
-    // This function is used within the contract to set the timestamp 
+    // This function is used within the contract to set the timestamp
     // when a Component for a specific Template was minted
     access(account) fun setLastComponentMintedAt(id: UInt64, value: UFix64) {
         FlovatarComponentTemplate.lastComponentMintedAt[id] = value

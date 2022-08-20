@@ -22,7 +22,7 @@ pub contract FlovatarMarketplace {
 
     // Event that is emitted when a new NFT is put up for sale
     pub event FlovatarForSale(id: UInt64, price: UFix64, address: Address)
-    pub event FlovatarComponentForSale(id: UInt64, price: UFix64, address: Address)
+    pub event FlovatarComponentForSale(id: UInt64, price: UFix64, address: Address, mint: UInt64)
 
     // Event that is emitted when the price of an NFT changes
     pub event FlovatarPriceChanged(id: UInt64, newPrice: UFix64, address: Address)
@@ -122,6 +122,7 @@ pub contract FlovatarMarketplace {
         // Lists a Component NFT for sale in this collection
         pub fun listFlovatarComponentForSale(token: @FlovatarComponent.NFT, price: UFix64) {
             let id = token.id
+            let mint = token.mint
 
             // store the price in the price array
             self.flovatarComponentPrices[id] = price
@@ -132,7 +133,7 @@ pub contract FlovatarMarketplace {
 
             let vaultRef = self.ownerVault.borrow()
                 ?? panic("Could not borrow reference to owner token vault")
-            emit FlovatarComponentForSale(id: id, price: price, address: vaultRef.owner!.address)
+            emit FlovatarComponentForSale(id: id, price: price, address: vaultRef.owner!.address, mint: mint)
         }
 
         // Changes the price of a Flovatar that is currently for sale
@@ -177,7 +178,7 @@ pub contract FlovatarMarketplace {
             let creatorAmount = price * Flovatar.getRoyaltyCut()
             let tempCreatorWallet <- buyTokens.withdraw(amount: creatorAmount)
             creatorWallet.deposit(from: <-tempCreatorWallet)
-            
+
 
             let marketplaceWallet = FlovatarMarketplace.marketplaceWallet.borrow()!
             let marketplaceAmount = price * Flovatar.getMarketplaceCut()
@@ -305,7 +306,7 @@ pub contract FlovatarMarketplace {
         }
     }
 
-    // This struct is used to send a data representation of the Component Sales 
+    // This struct is used to send a data representation of the Component Sales
     // when retrieved using the contract helper methods outside the collection.
     pub struct FlovatarComponentSaleData {
         pub let id: UInt64

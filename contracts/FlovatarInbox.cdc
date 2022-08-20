@@ -53,7 +53,7 @@ pub contract FlovatarInbox {
     pub event WalletWithdrawDust(address: Address, amount: UFix64)
     pub event FlovatarClaimedCommunityDust(id: UInt64, amount: UFix64, to: Address)
 
-    // This struct contains all the information about the Dust about to the claimed for each Flovatar by the user
+    // This struct contains all the information about the Dust to be claimed for each Flovatar by the user
     pub struct ClaimableDust{
         pub let amount: UFix64
         pub let days: UInt64
