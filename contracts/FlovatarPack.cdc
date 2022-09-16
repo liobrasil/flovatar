@@ -4,6 +4,7 @@ import FlowToken from "./FlowToken.cdc"
 import FlovatarComponentTemplate from "./FlovatarComponentTemplate.cdc"
 import FlovatarComponent from "./FlovatarComponent.cdc"
 import Crypto
+import FlowUtilityToken from "./FlowUtilityToken.cdc"
 
 /*
 
@@ -135,6 +136,7 @@ pub contract FlovatarPack {
         pub fun getIDs(): [UInt64]
         pub fun deposit(token: @FlovatarPack.Pack)
         pub fun purchase(tokenId: UInt64, recipientCap: Capability<&{FlovatarPack.CollectionPublic}>, buyTokens: @FungibleToken.Vault, signature: String)
+        pub fun purchaseDapper(tokenId: UInt64, recipientCap: Capability<&{FlovatarPack.CollectionPublic}>, buyTokens: @FungibleToken.Vault, signature: String, expectedPrice: UFix64)
     }
 
     // Main Collection that implements the Public interface and that
@@ -237,6 +239,7 @@ pub contract FlovatarPack {
             pre {
                 self.ownedPacks.containsKey(tokenId) == true : "Pack not found!"
                 self.getPrice(id: tokenId) <= buyTokens.balance : "Not enough tokens to buy the Pack!"
+                buyTokens.isInstance(Type<@FlowToken.Vault>()) : "Vault not of the right Token Type"
             }
 
             // Gets the Crypto.KeyList and the public key of the collection's owner
@@ -292,11 +295,80 @@ pub contract FlovatarPack {
             emit Purchased(id: packId)
 
         }
+        //
+        pub fun purchaseDapper(tokenId: UInt64, recipientCap: Capability<&{FlovatarPack.CollectionPublic}>, buyTokens: @FungibleToken.Vault, signature: String, expectedPrice: UFix64) {
+
+            // Checks that the pack is still available and that the FLOW tokens are sufficient
+            pre {
+                self.ownedPacks.containsKey(tokenId) == true : "Pack not found!"
+                self.getPrice(id: tokenId) <= buyTokens.balance : "Not enough tokens to buy the Pack!"
+                self.getPrice(id: tokenId) == expectedPrice : "Price not set as expected!"
+                buyTokens.isInstance(Type<@FlowUtilityToken.Vault>()) : "Vault not of the right Token Type"
+            }
+
+            // Gets the Crypto.KeyList and the public key of the collection's owner
+            let keyList = Crypto.KeyList()
+            let accountKey = self.owner!.keys.get(keyIndex: 0)!.publicKey
+
+            // Adds the public key to the keyList
+            keyList.add(
+                PublicKey(
+                    publicKey: accountKey.publicKey,
+                    signatureAlgorithm: accountKey.signatureAlgorithm
+                ),
+                hashAlgorithm: HashAlgorithm.SHA3_256,
+                weight: 1.0
+            )
+
+            // Creates a Crypto.KeyListSignature from the signature provided in the parameters
+            let signatureSet: [Crypto.KeyListSignature] = []
+            signatureSet.append(
+                Crypto.KeyListSignature(
+                    keyIndex: 0,
+                    signature: signature.decodeHex()
+                )
+            )
+
+            // Verifies that the signature is valid and that it was generated from the
+            // owner of the collection
+            if(!keyList.verify(signatureSet: signatureSet, signedData: self.getRandomString(id: tokenId).utf8)){
+                panic("Unable to validate the signature for the pack!")
+            }
+
+
+            // Borrows the recipient's capability and withdraws the Pack from the collection.
+            // If this fails the transaction will revert but the signature will be exposed.
+            // For this reason in case it happens, the randomString will be reset when the purchase
+            // reservation timeout expires by the web server back-end.
+            let recipient = recipientCap.borrow()!
+            let pack <- self.withdraw(withdrawID: tokenId)
+
+            // Borrows the owner's capability for the Vault and deposits the FLOW tokens
+            //testnet
+            let dapperMarketVault = getAccount(0xf973db40ee7af81c).getCapability<&{FungibleToken.Receiver}>(/public/flowUtilityTokenReceiver)
+            //mainnet
+            //let dapperMarketVault = getAccount(0x8a86f18e0e05bd9f).getCapability<&{FungibleToken.Receiver}>(/public/flowUtilityTokenReceiver)
+            let vaultRef = dapperMarketVault.borrow() ?? panic("Could not borrow reference to owner pack vault")
+            vaultRef.deposit(from: <-buyTokens)
+
+
+            // Resets the randomString so that the provided signature will become useless
+            let packId: UInt64 = pack.id
+            pack.setRandomString(randomString: unsafeRandom().toString())
+
+            // Deposits the Pack to the recipient's collection
+            recipient.deposit(token: <- pack)
+
+            // Emits an even to notify about the purchase
+            emit Purchased(id: packId)
+        }
 
         destroy() {
             destroy self.ownedPacks
         }
     }
+
+
 
     // public function that anyone can call to create a new empty collection
     pub fun createEmptyCollection(ownerVault: Capability<&{FungibleToken.Receiver}>): @FlovatarPack.Collection {
