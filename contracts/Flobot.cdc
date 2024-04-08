@@ -1,17 +1,12 @@
-//import FungibleToken from 0xf233dcee88fe0abe
-//import NonFungibleToken from 0x1d7e57aa55817448
-//import FlowToken from 0x1654653399040a61
-//import FlovatarComponentTemplate from 0x921ea449dffec68a
-//import FlovatarComponent from 0x921ea449dffec68a
-//import FlovatarPack from 0x921ea449dffec68a
-//import MetadataViews from 0x1d7e57aa55817448
-import FungibleToken from "./FungibleToken.cdc"
-import NonFungibleToken from "./NonFungibleToken.cdc"
-import FlowToken from "./FlowToken.cdc"
-import FlovatarComponentTemplate from "./FlovatarComponentTemplate.cdc"
-import FlovatarComponent from "./FlovatarComponent.cdc"
-import FlovatarPack from "./FlovatarPack.cdc"
-import MetadataViews from "./MetadataViews.cdc"
+import FungibleToken from "FungibleToken"
+import "ViewResolver"
+
+import NonFungibleToken from "NonFungibleToken"
+import FlowToken from "FlowToken"
+import FlovatarComponentTemplate from "FlovatarComponentTemplate"
+import FlovatarComponent from "FlovatarComponent"
+import FlovatarPack from "FlovatarPack"
+import MetadataViews from "MetadataViews"
 
 /*
 
@@ -28,11 +23,11 @@ This contract contains also the Admin resource that can be used to manage and ge
 
  */
 
-pub contract Flobot: NonFungibleToken {
+access(all) contract Flobot: NonFungibleToken {
 
-    pub let CollectionStoragePath: StoragePath
-    pub let CollectionPublicPath: PublicPath
-    pub let AdminStoragePath: StoragePath
+    access(all) let CollectionStoragePath: StoragePath
+    access(all) let CollectionPublicPath: PublicPath
+    access(all) let AdminStoragePath: StoragePath
 
     // These will be used in the Marketplace to pay out
     // royalties to the creator and to the marketplace
@@ -41,36 +36,36 @@ pub contract Flobot: NonFungibleToken {
 
     // Here we keep track of all the Flobot unique combinations and names
     // that people will generate to make sure that there are no duplicates
-    pub var totalSupply: UInt64
+    access(all) var totalSupply: UInt64
     access(contract) let mintedCombinations: {String: Bool}
     access(contract) let mintedNames: {String: Bool}
 
-    pub event ContractInitialized()
-    pub event Withdraw(id: UInt64, from: Address?)
-    pub event Deposit(id: UInt64, to: Address?)
-    pub event Created(id: UInt64, metadata: Metadata)
-    pub event Updated(id: UInt64)
-    pub event NameSet(id: UInt64, name: String)
+    access(all) event ContractInitialized()
+    access(all) event Withdraw(id: UInt64, from: Address?)
+    access(all) event Deposit(id: UInt64, to: Address?)
+    access(all) event Created(id: UInt64, metadata: Metadata)
+    access(all) event Updated(id: UInt64)
+    access(all) event NameSet(id: UInt64, name: String)
 
 
-    pub struct Royalties{
-        pub let royalty: [Royalty]
+    access(all) struct Royalties{
+        access(all) let royalty: [Royalty]
         init(royalty: [Royalty]) {
             self.royalty=royalty
         }
     }
 
-    pub enum RoyaltyType: UInt8{
-        pub case fixed
-        pub case percentage
+    access(all) enum RoyaltyType: UInt8{
+        access(all) case fixed
+        access(all) case percentage
     }
 
-    pub struct Royalty{
-        pub let wallet:Capability<&{FungibleToken.Receiver}>
-        pub let cut: UFix64
+    access(all) struct Royalty{
+        access(all) let wallet:Capability<&{FungibleToken.Receiver}>
+        access(all) let cut: UFix64
 
         //can be percentage
-        pub let type: RoyaltyType
+        access(all) let type: RoyaltyType
 
         init(wallet:Capability<&{FungibleToken.Receiver}>, cut: UFix64, type: RoyaltyType ){
             self.wallet=wallet
@@ -81,12 +76,12 @@ pub contract Flobot: NonFungibleToken {
 
 
     // This Metadata struct contains all the most important informations about the Flobot
-    pub struct Metadata {
-        pub let mint: UInt64
-        pub let series: UInt32
-        pub let combination: String
-        pub let rarity: String
-        pub let creatorAddress: Address
+    access(all) struct Metadata {
+        access(all) let mint: UInt64
+        access(all) let series: UInt32
+        access(all) let combination: String
+        access(all) let rarity: String
+        access(all) let creatorAddress: Address
         access(self) let components: {String: UInt64}
 
 
@@ -105,7 +100,7 @@ pub contract Flobot: NonFungibleToken {
                 self.creatorAddress = creatorAddress
                 self.components = components
         }
-        pub fun getComponents(): {String: UInt64} {
+        access(all) fun getComponents(): {String: UInt64} {
             return self.components
         }
     }
@@ -113,43 +108,43 @@ pub contract Flobot: NonFungibleToken {
     // The public interface can show metadata and the content for the Flobot.
     // In addition to it, it provides methods to access the additional optional
     // components (accessory, hat, eyeglasses, background) for everyone.
-    pub resource interface Public {
-        pub let id: UInt64
+    access(all) resource interface Public {
+        access(all) let id: UInt64
         access(contract) let metadata: Metadata
         access(contract) let royalties: Royalties
 
         // these three are added because I think they will be in the standard. At least Dieter thinks it will be needed
         access(contract) var name: String
-        pub let description: String
-        pub let schema: String?
+        access(all) let description: String
+        access(all) let schema: String?
 
-        pub fun getName(): String
-        pub fun getBackground(): UInt64?
+        access(all) fun getName(): String
+        access(all) fun getBackground(): UInt64?
 
-        pub fun getSvg(): String
-        pub fun getMetadata(): Metadata
-        pub fun getRoyalties(): Royalties
-        pub fun getBio(): {String: String}
+        access(all) fun getSvg(): String
+        access(all) fun getMetadata(): Metadata
+        access(all) fun getRoyalties(): Royalties
+        access(all) fun getBio(): {String: String}
     }
 
     //The private interface can update the Accessory, Hat, Eyeglasses and Background
     //for the Flobot and is accessible only to the owner of the NFT
-    pub resource interface Private {
-        pub fun setName(name: String): String
-        pub fun setBackground(component: @FlovatarComponent.NFT): @FlovatarComponent.NFT?
-        pub fun removeBackground(): @FlovatarComponent.NFT?
+    access(all) resource interface Private {
+        access(all) fun setName(name: String): String
+        access(all) fun setBackground(component: @FlovatarComponent.NFT): @FlovatarComponent.NFT?
+        access(all) fun removeBackground(): @FlovatarComponent.NFT?
     }
 
     //The NFT resource that implements both Private and Public interfaces
-    pub resource NFT: NonFungibleToken.INFT, Public, Private, MetadataViews.Resolver {
-        pub let id: UInt64
+    access(all) resource NFT: NonFungibleToken.INFT, Public, Private, ViewResolver.Resolver {
+        access(all) let id: UInt64
         access(contract) let metadata: Metadata
         access(contract) let royalties: Royalties
         access(contract) var background: @FlovatarComponent.NFT?
 
         access(contract) var name: String
-        pub let description: String
-        pub let schema: String?
+        access(all) let description: String
+        access(all) let schema: String?
         access(self) let bio: {String: String}
 
         init(metadata: Metadata,
@@ -167,33 +162,31 @@ pub contract Flobot: NonFungibleToken {
             self.bio = {}
         }
 
-        destroy() {
-            destroy self.background
-        }
+        
 
-        pub fun getID(): UInt64 {
+        access(all) fun getID(): UInt64 {
             return self.id
         }
 
-        pub fun getMetadata(): Metadata {
+        access(all) fun getMetadata(): Metadata {
             return self.metadata
         }
 
-        pub fun getRoyalties(): Royalties {
+        access(all) fun getRoyalties(): Royalties {
             return self.royalties
         }
 
-        pub fun getBio(): {String: String} {
+        access(all) fun getBio(): {String: String} {
             return self.bio
         }
 
-        pub fun getName(): String {
+        access(all) fun getName(): String {
             return self.name
         }
 
         // This will allow to change the Name of the Flobot only once.
         // It checks for the current name is empty, otherwise it will throw an error.
-        pub fun setName(name: String): String {
+        access(all) fun setName(name: String): String {
             pre {
                 // TODO: Make sure that the text of the name is sanitized
                 //and that bad words are not accepted?
@@ -219,13 +212,13 @@ pub contract Flobot: NonFungibleToken {
         }
 
 
-        pub fun getBackground(): UInt64? {
+        access(all) fun getBackground(): UInt64? {
             return self.background?.templateId
         }
 
         // This will allow to change the Background of the Flobot any time.
         // It checks for the right category and series before executing.
-        pub fun setBackground(component: @FlovatarComponent.NFT): @FlovatarComponent.NFT? {
+        access(all) fun setBackground(component: @FlovatarComponent.NFT): @FlovatarComponent.NFT? {
             pre {
                 component.getCategory() == "background" : "The component needs to be a background"
                 (component.getSeries() == self.metadata.series || component.getSeries() == UInt32(1)) : "The accessory belongs to a different series"
@@ -238,7 +231,7 @@ pub contract Flobot: NonFungibleToken {
         }
 
         // This will allow to remove the Background of the Flobot any time.
-        pub fun removeBackground(): @FlovatarComponent.NFT? {
+        access(all) fun removeBackground(): @FlovatarComponent.NFT? {
             emit Updated(id: self.id)
             let compNFT <- self.background <- nil
             return <-compNFT
@@ -248,7 +241,7 @@ pub contract Flobot: NonFungibleToken {
         // optional components (Accessory, Hat, Eyeglasses and Background) from their
         // original Template resources, while all the other unmutable components are
         // taken from the Metadata directly.
-        pub fun getSvg(): String {
+        access(all) fun getSvg(): String {
             var svg: String = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3000 3000' width='100%' height='100%'>"
 
             if let background = self.getBackground() {
@@ -264,7 +257,7 @@ pub contract Flobot: NonFungibleToken {
             return svg
 
         }
-        pub fun getSvgNoBg(): String {
+        access(all) fun getSvgNoBg(): String {
             var svg: String = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3000 3000' width='100%' height='100%'>"
 
             svg = svg.concat(self.getTraitsSvg())
@@ -275,7 +268,7 @@ pub contract Flobot: NonFungibleToken {
 
         }
 
-        pub fun getTraitsSvg(): String {
+        access(all) fun getTraitsSvg(): String {
             var svg: String = ""
 
             let components: {String: UInt64} = self.metadata.getComponents()
@@ -298,7 +291,7 @@ pub contract Flobot: NonFungibleToken {
         }
 
 
-        pub fun getViews() : [Type] {
+        access(all) view fun getViews(): [Type]{
             var views : [Type]=[]
             views.append(Type<MetadataViews.NFTCollectionData>())
             views.append(Type<MetadataViews.NFTCollectionDisplay>())
@@ -310,7 +303,7 @@ pub contract Flobot: NonFungibleToken {
             views.append(Type<MetadataViews.Traits>())
             return views
         }
-        pub fun resolveView(_ type: Type): AnyStruct? {
+        access(all) fun resolveView(_ type: Type): AnyStruct? {
 
             if type == Type<MetadataViews.ExternalURL>() {
                 return MetadataViews.ExternalURL("https://flovatar.com/flobots/".concat(self.id.toString()))
@@ -320,10 +313,10 @@ pub contract Flobot: NonFungibleToken {
                 let royalties : [MetadataViews.Royalty] = []
                 var count: Int = 0
                 for royalty in self.royalties.royalty {
-                    royalties.append(MetadataViews.Royalty(recepient: royalty.wallet, cut: royalty.cut, description: "Flovatar Royalty ".concat(count.toString())))
+                    royalties.append(MetadataViews.Royalty(receiver: royalty.wallet, cut: royalty.cut, description: "Flovatar Royalty ".concat(count.toString())))
                     count = count + Int(1)
                 }
-                return MetadataViews.Royalties(cutInfos: royalties)
+                return MetadataViews.Royalties( royalties)
             }
 
             if type == Type<MetadataViews.Serial>() {
@@ -367,15 +360,9 @@ pub contract Flobot: NonFungibleToken {
             }
 
             if type == Type<MetadataViews.NFTCollectionData>() {
-                return MetadataViews.NFTCollectionData(
-                storagePath: Flobot.CollectionStoragePath,
-                publicPath: Flobot.CollectionPublicPath,
-                providerPath: /private/FlobotCollection,
-                publicCollection: Type<&Flobot.Collection{NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection, Flobot.CollectionPublic}>(),
-                publicLinkedType: Type<&Flobot.Collection{NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection, Flobot.CollectionPublic}>(),
-                providerLinkedType: Type<&Flobot.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection, Flobot.CollectionPublic}>(),
-                createEmptyCollectionFunction: fun(): @NonFungibleToken.Collection {return <- Flobot.createEmptyCollection()}
-                )
+                return MetadataViews.NFTCollectionData(storagePath: Flobot.CollectionStoragePath, publicPath: Flobot.CollectionPublicPath, publicCollection: Type<&Flobot.Collection>(), publicLinkedType: Type<&Flobot.Collection>(), createEmptyCollectionFunction: fun (): @{NonFungibleToken.Collection} {
+        return <-Flobot.createEmptyCollection(nftType: Type<@Collection>())
+    })
             }
 
             if type == Type<MetadataViews.Display>() {
@@ -420,15 +407,21 @@ pub contract Flobot: NonFungibleToken {
 
             return nil
         }
+
+access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection}{
+ return <-create Collection() 
+}
+
+
     }
 
 
     // Standard NFT collectionPublic interface that can also borrowFlobot as the correct type
-    pub resource interface CollectionPublic {
-        pub fun deposit(token: @NonFungibleToken.NFT)
-        pub fun getIDs(): [UInt64]
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
-        pub fun borrowFlobot(id: UInt64): &Flobot.NFT{Flobot.Public, MetadataViews.Resolver}? {
+    access(all) resource interface CollectionPublic {
+        access(all) fun deposit(token: @{NonFungibleToken.NFT})
+        access(all) fun getIDs(): [UInt64]
+        access(all) view fun borrowNFT(_ id: UInt64): &{NonFungibleToken.NFT}?
+        access(all) fun borrowFlobot(id: UInt64): &Flobot.NFT? {
             // If the result isn't nil, the id of the returned reference
             // should be the same as the argument to the function
             post {
@@ -439,17 +432,17 @@ pub contract Flobot: NonFungibleToken {
     }
 
     // Main Collection to manage all the Flobot NFT
-    pub resource Collection: CollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection {
+    access(all) resource Collection: CollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.Collection, NonFungibleToken.CollectionPublic, ViewResolver.ResolverCollection {
         // dictionary of NFT conforming tokens
         // NFT is a resource type with an `UInt64` ID field
-        pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
+        access(all) var ownedNFTs: @{UInt64: {NonFungibleToken.NFT}}
 
         init () {
             self.ownedNFTs <- {}
         }
 
         // withdraw removes an NFT from the collection and moves it to the caller
-        pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
+        access(NonFungibleToken.Withdraw | NonFungibleToken.Owner) fun withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT}{
             let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("missing NFT")
 
             emit Withdraw(id: token.id, from: self.owner?.address)
@@ -459,7 +452,7 @@ pub contract Flobot: NonFungibleToken {
 
         // deposit takes a NFT and adds it to the collections dictionary
         // and adds the ID to the id array
-        pub fun deposit(token: @NonFungibleToken.NFT) {
+        access(all) fun deposit(token: @{NonFungibleToken.NFT}) {
             let token <- token as! @Flobot.NFT
 
             let id: UInt64 = token.id
@@ -473,23 +466,23 @@ pub contract Flobot: NonFungibleToken {
         }
 
         // getIDs returns an array of the IDs that are in the collection
-        pub fun getIDs(): [UInt64] {
+        access(all) view fun getIDs(): [UInt64]{
             return self.ownedNFTs.keys
         }
 
         // borrowNFT gets a reference to an NFT in the collection
         // so that the caller can read its metadata and call its methods
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
-            return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
+        access(all) view fun borrowNFT(_ id: UInt64): &{NonFungibleToken.NFT}?{
+            return (&self.ownedNFTs[id] as &{NonFungibleToken.NFT}?)!
         }
 
         // borrowFlobot returns a borrowed reference to a Flobot
         // so that the caller can read data and call methods from it.
-        pub fun borrowFlobot(id: UInt64): &Flobot.NFT{Flobot.Public, MetadataViews.Resolver}? {
+        access(all) fun borrowFlobot(id: UInt64): &Flobot.NFT? {
             if self.ownedNFTs[id] != nil {
-                let ref = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+                let ref = (&self.ownedNFTs[id] as &{NonFungibleToken.NFT}?)!
                 let flobotNFT = ref as! &Flobot.NFT
-                return flobotNFT as &Flobot.NFT{Flobot.Public, MetadataViews.Resolver}
+                return flobotNFT as &Flobot.NFT
             } else {
                 return nil
             }
@@ -497,42 +490,46 @@ pub contract Flobot: NonFungibleToken {
 
         // borrowFlobotPrivate returns a borrowed reference to a Flobot using the Private interface
         // so that the caller can read data and call methods from it, like setting the optional components.
-        pub fun borrowFlobotPrivate(id: UInt64): &{Flobot.Private}? {
+        access(all) fun borrowFlobotPrivate(id: UInt64): &{Flobot.Private}? {
             if self.ownedNFTs[id] != nil {
-                let ref = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+                let ref = (&self.ownedNFTs[id] as &{NonFungibleToken.NFT}?)!
                 return ref as! &Flobot.NFT
             } else {
                 return nil
             }
         }
 
-        destroy() {
-            destroy self.ownedNFTs
-        }
+        
 
-        pub fun borrowViewResolver(id: UInt64): &AnyResource{MetadataViews.Resolver} {
+        access(all) view fun borrowViewResolver(id: UInt64): &{ViewResolver.Resolver}?{
             pre {
                 self.ownedNFTs[id] != nil : "NFT does not exist"
             }
-            let nft = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+            let nft = (&self.ownedNFTs[id] as &{NonFungibleToken.NFT}?)!
             let flobotNFT = nft as! &Flobot.NFT
-            return flobotNFT as &AnyResource{MetadataViews.Resolver}
+            return flobotNFT as &{ViewResolver.Resolver}?
         }
+
+access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection}{
+ return <-create Collection() 
+}
+
+
     }
 
     // public function that anyone can call to create a new empty collection
-    pub fun createEmptyCollection(): @NonFungibleToken.Collection {
+    access(all) fun createEmptyCollection(nftType: Type): @{NonFungibleToken.Collection}{
         return <- create Collection()
     }
 
     // This struct is used to send a data representation of the Flobots
     // when retrieved using the contract helper methods outside the collection.
-    pub struct FlobotData {
-        pub let id: UInt64
-        pub let name: String
-        pub let metadata: Flobot.Metadata
-        pub let backgroundId: UInt64?
-        pub let bio: {String: String}
+    access(all) struct FlobotData {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let metadata: Flobot.Metadata
+        access(all) let backgroundId: UInt64?
+        access(all) let bio: {String: String}
         init(
             id: UInt64,
             name: String,
@@ -550,11 +547,11 @@ pub contract Flobot: NonFungibleToken {
 
 
     // This function will look for a specific Flobot on a user account and return a FlobotData if found
-    pub fun getFlobot(address: Address, flobotId: UInt64) : FlobotData? {
+    access(all) fun getFlobot(address: Address, flobotId: UInt64) : FlobotData? {
 
         let account = getAccount(address)
 
-        if let flobotCollection = account.getCapability(self.CollectionPublicPath).borrow<&{Flobot.CollectionPublic}>()  {
+        if let flobotCollection = account.capabilities.get(self.CollectionPublicPath)!.borrow<&{Flobot.CollectionPublic}>()  {
             if let flobot = flobotCollection.borrowFlobot(id: flobotId) {
                 return FlobotData(
                     id: flobotId,
@@ -569,12 +566,12 @@ pub contract Flobot: NonFungibleToken {
     }
 
     // This function will return all Flobots on a user account and return an array of FlobotData
-    pub fun getFlobots(address: Address) : [FlobotData] {
+    access(all) fun getFlobots(address: Address) : [FlobotData] {
 
         var flobotData: [FlobotData] = []
         let account = getAccount(address)
 
-        if let flobotCollection = account.getCapability(self.CollectionPublicPath).borrow<&{Flobot.CollectionPublic}>()  {
+        if let flobotCollection = account.capabilities.get(self.CollectionPublicPath)!.borrow<&{Flobot.CollectionPublic}>()  {
             for id in flobotCollection.getIDs() {
                 var flobot = flobotCollection.borrowFlobot(id: id)
                 flobotData.append(FlobotData(
@@ -591,11 +588,11 @@ pub contract Flobot: NonFungibleToken {
 
 
     // This returns all the previously minted combinations, so that duplicates won't be allowed
-    pub fun getMintedCombinations() : [String] {
+    access(all) fun getMintedCombinations() : [String] {
         return Flobot.mintedCombinations.keys
     }
     // This returns all the previously minted names, so that duplicates won't be allowed
-    pub fun getMintedNames() : [String] {
+    access(all) fun getMintedNames() : [String] {
         return Flobot.mintedNames.keys
     }
 
@@ -611,7 +608,7 @@ pub contract Flobot: NonFungibleToken {
     // This helper function will generate a string from a list of components,
     // to be used as a sort of barcode to keep the inventory of the minted
     // Flobots and to avoid duplicates
-    pub fun getCombinationString(
+    access(all) fun getCombinationString(
         body: UInt64,
         head: UInt64,
         arms: UInt64,
@@ -623,7 +620,7 @@ pub contract Flobot: NonFungibleToken {
 
     // This function will get a list of component IDs and will check if the
     // generated string is unique or if someone already used it before.
-    pub fun checkCombinationAvailable(
+    access(all) fun checkCombinationAvailable(
         body: UInt64,
         head: UInt64,
         arms: UInt64,
@@ -642,7 +639,7 @@ pub contract Flobot: NonFungibleToken {
 
     // This will check if a specific Name has already been taken
     // and assigned to some Flobot
-    pub fun checkNameAvailable(name: String) : Bool {
+    access(all) fun checkNameAvailable(name: String) : Bool {
         return name.length > 2 && name.length < 20 && ! Flobot.mintedNames.containsKey(name)
     }
 
@@ -654,7 +651,7 @@ pub contract Flobot: NonFungibleToken {
     // The Spark NFT will entitle to use any common basic component (body, hair, etc.)
     // In order to use special rare components a boost of the same rarity will be needed
     // for each component used
-    pub fun createFlobot(
+    access(all) fun createFlobot(
         flobotkit: @[FlovatarComponent.NFT],
         body: UInt64,
         head: UInt64,
@@ -813,13 +810,13 @@ pub contract Flobot: NonFungibleToken {
 
         let creatorAccount = getAccount(address)
         royalties.append(Royalty(
-            wallet: creatorAccount.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver),
+            wallet: creatorAccount.capabilities.get<&FlowToken.Vault>(/public/flowTokenReceiver)!,
             cut: Flobot.getRoyaltyCut(),
             type: RoyaltyType.percentage
         ))
 
         royalties.append(Royalty(
-            wallet: self.account.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver),
+            wallet: self.account.capabilities.get<&FlowToken.Vault>(/public/flowTokenReceiver)!,
             cut: Flobot.getMarketplaceCut(),
             type: RoyaltyType.percentage
         ))
@@ -855,10 +852,10 @@ pub contract Flobot: NonFungibleToken {
 
     // These functions will return the current Royalty cuts for
     // both the Creator and the Marketplace.
-    pub fun getRoyaltyCut(): UFix64{
+    access(all) fun getRoyaltyCut(): UFix64{
         return self.royaltyCut
     }
-    pub fun getMarketplaceCut(): UFix64{
+    access(all) fun getMarketplaceCut(): UFix64{
         return self.marketplaceCut
     }
     // Only Admins will be able to call the set functions to
@@ -875,22 +872,22 @@ pub contract Flobot: NonFungibleToken {
 
     // This is the main Admin resource that will allow the owner
     // to generate new Templates, Components and Packs
-    pub resource Admin {
+    access(all) resource Admin {
 
 
         // With this function you can generate a new Admin resource
         // and pass it to another user if needed
-        pub fun createNewAdmin(): @Admin {
+        access(all) fun createNewAdmin(): @Admin {
             return <-create Admin()
         }
 
         // Helper functions to update the Royalty cut
-        pub fun setRoyaltyCut(value: UFix64) {
+        access(all) fun setRoyaltyCut(value: UFix64) {
             Flobot.setRoyaltyCut(value: value)
         }
 
         // Helper functions to update the Marketplace cut
-        pub fun setMarketplaceCut(value: UFix64) {
+        access(all) fun setMarketplaceCut(value: UFix64) {
             Flobot.setMarketplaceCut(value: value)
         }
     }
@@ -913,11 +910,13 @@ pub contract Flobot: NonFungibleToken {
         self.royaltyCut = 0.01
         self.marketplaceCut = 0.05
 
-        self.account.save<@NonFungibleToken.Collection>(<- Flobot.createEmptyCollection(), to: Flobot.CollectionStoragePath)
-        self.account.link<&{Flobot.CollectionPublic}>(Flobot.CollectionPublicPath, target: Flobot.CollectionStoragePath)
+        self.account.storage.save<@{NonFungibleToken.Collection}>(<- Flobot.createEmptyCollection(nftType: Type<@Collection>()), to: Flobot.CollectionStoragePath)
+        var _capForLinked1 = self.account.capabilities.storage.issue<&{Flobot.CollectionPublic}>( Flobot.CollectionStoragePath)
+self.account.capabilities.publish(_capForLinked1 , at:Flobot.CollectionPublicPath)
+
 
         // Put the Admin resource in storage
-        self.account.save<@Admin>(<- create Admin(), to: self.AdminStoragePath)
+        self.account.storage.save<@Admin>(<- create Admin(), to: self.AdminStoragePath)
 
         emit ContractInitialized()
 	}

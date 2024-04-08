@@ -16,48 +16,48 @@
 
  */
 
-pub contract FlovatarComponentTemplate {
+access(all) contract FlovatarComponentTemplate {
 
-    pub let CollectionStoragePath: StoragePath
-    pub let CollectionPublicPath: PublicPath
+    access(all) let CollectionStoragePath: StoragePath
+    access(all) let CollectionPublicPath: PublicPath
 
 
     // Counter for all the Templates ever minted
-    pub var totalSupply: UInt64
+    access(all) var totalSupply: UInt64
     //These counters will keep track of how many Components were minted for each Template
     access(contract) let totalMintedComponents: { UInt64: UInt64 }
     access(contract) let lastComponentMintedAt: { UInt64: UFix64 }
 
     // Event to notify about the Template creation
-    pub event ContractInitialized()
-    pub event Created(id: UInt64, name: String, category: String, color: String, maxMintableComponents: UInt64)
+    access(all) event ContractInitialized()
+    access(all) event Created(id: UInt64, name: String, category: String, color: String, maxMintableComponents: UInt64)
 
     // The public interface providing the SVG and all the other 
     // metadata like name, category, color, series, description and 
     // the maximum mintable Components
-    pub resource interface Public {
-        pub let id: UInt64
-        pub let name: String
-        pub let category: String
-        pub let color: String
-        pub let description: String
-        pub let svg: String
-        pub let series: UInt32
-        pub let maxMintableComponents: UInt64
-        pub let rarity: String
+    access(all) resource interface Public {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let category: String
+        access(all) let color: String
+        access(all) let description: String
+        access(all) let svg: String
+        access(all) let series: UInt32
+        access(all) let maxMintableComponents: UInt64
+        access(all) let rarity: String
     }
 
     // The Component resource implementing the public interface as well
-    pub resource ComponentTemplate: Public {
-        pub let id: UInt64
-        pub let name: String
-        pub let category: String
-        pub let color: String
-        pub let description: String
-        pub let svg: String
-        pub let series: UInt32
-        pub let maxMintableComponents: UInt64
-        pub let rarity: String
+    access(all) resource ComponentTemplate: Public {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let category: String
+        access(all) let color: String
+        access(all) let description: String
+        access(all) let svg: String
+        access(all) let series: UInt32
+        access(all) let maxMintableComponents: UInt64
+        access(all) let rarity: String
 
         // Initialize a Template with all the necessary data
         init(
@@ -85,15 +85,15 @@ pub contract FlovatarComponentTemplate {
     }
 
     // Standard CollectionPublic interface that can also borrow Component Templates
-    pub resource interface CollectionPublic {
-        pub fun getIDs(): [UInt64]
-        pub fun borrowComponentTemplate(id: UInt64): &{FlovatarComponentTemplate.Public}?
+    access(all) resource interface CollectionPublic {
+        access(all) fun getIDs(): [UInt64]
+        access(all) fun borrowComponentTemplate(id: UInt64): &{FlovatarComponentTemplate.Public}?
     }
 
     // The main Collection that manages the Templates and that implements also the Public interface
-    pub resource Collection: CollectionPublic {
+    access(all) resource Collection: CollectionPublic {
         // Dictionary of Component Templates
-        pub var ownedComponentTemplates: @{UInt64: FlovatarComponentTemplate.ComponentTemplate}
+        access(all) var ownedComponentTemplates: @{UInt64: FlovatarComponentTemplate.ComponentTemplate}
 
         init () {
             self.ownedComponentTemplates <- {}
@@ -103,7 +103,7 @@ pub contract FlovatarComponentTemplate {
 
         // deposit takes a Component Template and adds it to the collections dictionary
         // and adds the ID to the id array
-        pub fun deposit(componentTemplate: @FlovatarComponentTemplate.ComponentTemplate) {
+        access(all) fun deposit(componentTemplate: @FlovatarComponentTemplate.ComponentTemplate) {
 
             let id: UInt64 = componentTemplate.id
 
@@ -114,24 +114,22 @@ pub contract FlovatarComponentTemplate {
         }
 
         // getIDs returns an array of the IDs that are in the collection
-        pub fun getIDs(): [UInt64] {
+        access(all) fun getIDs(): [UInt64] {
             return self.ownedComponentTemplates.keys
         }
 
         // borrowComponentTemplate returns a borrowed reference to a Component Template
         // so that the caller can read data and call methods from it.
-        pub fun borrowComponentTemplate(id: UInt64): &{FlovatarComponentTemplate.Public}? {
+        access(all) fun borrowComponentTemplate(id: UInt64): &{FlovatarComponentTemplate.Public}? {
             if self.ownedComponentTemplates[id] != nil {
-                let ref = (&self.ownedComponentTemplates[id] as auth &FlovatarComponentTemplate.ComponentTemplate?)!
+                let ref = (&self.ownedComponentTemplates[id] as &FlovatarComponentTemplate.ComponentTemplate?)!
                 return ref as! &FlovatarComponentTemplate.ComponentTemplate
             } else {
                 return nil
             }
         }
 
-        destroy() {
-            destroy self.ownedComponentTemplates
-        }
+        
     }
 
     // This function can only be called by the account owner to create an empty Collection
@@ -142,18 +140,18 @@ pub contract FlovatarComponentTemplate {
 
     // This struct is used to send a data representation of the Templates 
     // when retrieved using the contract helper methods outside the collection.
-    pub struct ComponentTemplateData {
-        pub let id: UInt64
-        pub let name: String
-        pub let category: String
-        pub let color: String
-        pub let description: String
-        pub let svg: String?
-        pub let series: UInt32
-        pub let maxMintableComponents: UInt64
-        pub let totalMintedComponents: UInt64
-        pub let lastComponentMintedAt: UFix64
-        pub let rarity: String
+    access(all) struct ComponentTemplateData {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let category: String
+        access(all) let color: String
+        access(all) let description: String
+        access(all) let svg: String?
+        access(all) let series: UInt32
+        access(all) let maxMintableComponents: UInt64
+        access(all) let totalMintedComponents: UInt64
+        access(all) let lastComponentMintedAt: UFix64
+        access(all) let rarity: String
 
         init(
             id: UInt64,
@@ -182,10 +180,10 @@ pub contract FlovatarComponentTemplate {
 
     // Get all the Component Templates from the account. 
     // We hide the SVG field because it might be too big to execute in a script
-    pub fun getComponentTemplates() : [ComponentTemplateData] {
+    access(all) fun getComponentTemplates() : [ComponentTemplateData] {
         var componentTemplateData: [ComponentTemplateData] = []
 
-        if let componentTemplateCollection = self.account.getCapability(self.CollectionPublicPath).borrow<&{FlovatarComponentTemplate.CollectionPublic}>()  {
+        if let componentTemplateCollection = self.account.capabilities.get(self.CollectionPublicPath)!.borrow<&{FlovatarComponentTemplate.CollectionPublic}>()  {
             for id in componentTemplateCollection.getIDs() {
                 var componentTemplate = componentTemplateCollection.borrowComponentTemplate(id: id)
                 componentTemplateData.append(ComponentTemplateData(
@@ -205,8 +203,8 @@ pub contract FlovatarComponentTemplate {
     }
 
     // Gets a specific Template from its ID
-    pub fun getComponentTemplate(id: UInt64) : ComponentTemplateData? {
-        if let componentTemplateCollection = self.account.getCapability(self.CollectionPublicPath).borrow<&{FlovatarComponentTemplate.CollectionPublic}>()  {
+    access(all) fun getComponentTemplate(id: UInt64) : ComponentTemplateData? {
+        if let componentTemplateCollection = self.account.capabilities.get(self.CollectionPublicPath)!.borrow<&{FlovatarComponentTemplate.CollectionPublic}>()  {
             if let componentTemplate = componentTemplateCollection.borrowComponentTemplate(id: id) {
                 return ComponentTemplateData(
                     id: id,
@@ -225,11 +223,11 @@ pub contract FlovatarComponentTemplate {
     }
 
     // Returns the amount of minted Components for a specific Template
-    pub fun getTotalMintedComponents(id: UInt64) : UInt64? {
+    access(all) fun getTotalMintedComponents(id: UInt64) : UInt64? {
         return FlovatarComponentTemplate.totalMintedComponents[id]
     }
     // Returns the timestamp of the last time a Component for a specific Template was minted
-    pub fun getLastComponentMintedAt(id: UInt64) : UFix64? {
+    access(all) fun getLastComponentMintedAt(id: UInt64) : UFix64? {
         return FlovatarComponentTemplate.lastComponentMintedAt[id]
     }
 
@@ -286,8 +284,10 @@ pub contract FlovatarComponentTemplate {
         self.totalMintedComponents = {}
         self.lastComponentMintedAt = {}
 
-        self.account.save<@FlovatarComponentTemplate.Collection>(<- FlovatarComponentTemplate.createEmptyCollection(), to: FlovatarComponentTemplate.CollectionStoragePath)
-        self.account.link<&{FlovatarComponentTemplate.CollectionPublic}>(FlovatarComponentTemplate.CollectionPublicPath, target: FlovatarComponentTemplate.CollectionStoragePath)
+        self.account.storage.save<@FlovatarComponentTemplate.Collection>(<- FlovatarComponentTemplate.createEmptyCollection(), to: FlovatarComponentTemplate.CollectionStoragePath)
+        var _capForLinked1 = self.account.capabilities.storage.issue<&{FlovatarComponentTemplate.CollectionPublic}>( FlovatarComponentTemplate.CollectionStoragePath)
+self.account.capabilities.publish(_capForLinked1 , at:FlovatarComponentTemplate.CollectionPublicPath)
+
 
         emit ContractInitialized()
 	}

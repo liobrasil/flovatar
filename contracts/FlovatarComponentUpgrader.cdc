@@ -6,15 +6,15 @@
 //import FlovatarPack from 0x921ea449dffec68a
 //import FlovatarDustToken from 0x921ea449dffec68a
 //import Flovatar from 0x921ea449dffec68a
-import FungibleToken from "./FungibleToken.cdc"
-import NonFungibleToken from "./NonFungibleToken.cdc"
-import FlowToken from "./FlowToken.cdc"
-import FlovatarComponentTemplate from "./FlovatarComponentTemplate.cdc"
-import FlovatarComponent from "./FlovatarComponent.cdc"
-import FlovatarPack from "./FlovatarPack.cdc"
-import FlovatarDustToken from "./FlovatarDustToken.cdc"
-import FlovatarInbox from "./FlovatarInbox.cdc"
-import Flovatar from "./Flovatar.cdc"
+import FungibleToken from "FungibleToken"
+import NonFungibleToken from "NonFungibleToken"
+import FlowToken from "FlowToken"
+import FlovatarComponentTemplate from "FlovatarComponentTemplate"
+import FlovatarComponent from "FlovatarComponent"
+import FlovatarPack from "FlovatarPack"
+import FlovatarDustToken from "FlovatarDustToken"
+import FlovatarInbox from "FlovatarInbox"
+import Flovatar from "Flovatar"
 
 /*
 
@@ -22,32 +22,32 @@ import Flovatar from "./Flovatar.cdc"
 
  */
 
-pub contract FlovatarComponentUpgrader {
+access(all) contract FlovatarComponentUpgrader {
 
     // The withdrawEnabled will allow to put all withdraws on hold while the distribution of new airdrops is happening
     // So that everyone will be then be able to access his rewards at the same time
     access(account) var upgradeEnabled: Bool
 
 
-    pub let CollectionStoragePath: StoragePath
-    pub let CollectionPublicPath: PublicPath
+    access(all) let CollectionStoragePath: StoragePath
+    access(all) let CollectionPublicPath: PublicPath
 
     // Event to notify about the Inbox creation
-    pub event ContractInitialized()
+    access(all) event ContractInitialized()
 
     // Events to notify when Dust or Components are deposited or withdrawn
-    pub event FlovatarComponentUpgraded(newId: UInt64, rarity: String, category: String, burnedIds: [UInt64])
+    access(all) event FlovatarComponentUpgraded(newId: UInt64, rarity: String, category: String, burnedIds: [UInt64])
 
 
     //Randomize code gently provided by @bluesign
-    pub struct RandomInt{
-        priv var value : UInt64?
-        priv let maxValue: UInt64
-        priv let minValue: UInt64
-        priv let field: String
-        priv let uuid: UInt64
+    access(all) struct RandomInt{
+        access(self) var value : UInt64?
+        access(self) let maxValue: UInt64
+        access(self) let minValue: UInt64
+        access(self) let field: String
+        access(self) let uuid: UInt64
 
-        pub init(uuid: UInt64, field: String, minValue: UInt64, maxValue: UInt64){
+        access(all) init(uuid: UInt64, field: String, minValue: UInt64, maxValue: UInt64){
                 self.uuid = uuid
                 self.field = field
                 self.minValue = minValue
@@ -55,7 +55,7 @@ pub contract FlovatarComponentUpgrader {
                 self.value = nil
         }
 
-        pub fun getValue() : UInt64{
+        access(all) fun getValue() : UInt64{
                 if let value = self.value {
                     return value
                 }
@@ -75,14 +75,14 @@ pub contract FlovatarComponentUpgrader {
         }
     }
 
-    pub resource interface CollectionPublic {
-        pub fun depositComponent(component: @FlovatarComponent.NFT)
+    access(all) resource interface CollectionPublic {
+        access(all) fun depositComponent(component: @FlovatarComponent.NFT)
     }
 
 
 
     // The main Collection that manages the Containers
-    pub resource Collection: CollectionPublic {
+    access(all) resource Collection: CollectionPublic {
 
         access(contract) let flovatarComponents: @{UInt64: FlovatarComponent.NFT}
         access(contract) let rarityLookup: {UInt32: {String: {String: {UInt64: UInt64}}}}
@@ -93,7 +93,7 @@ pub contract FlovatarComponentUpgrader {
             self.rarityLookup = {}
         }
 
-        pub fun depositComponent(component: @FlovatarComponent.NFT) {
+        access(all) fun depositComponent(component: @FlovatarComponent.NFT) {
             if(!self.rarityLookup.containsKey(component.getSeries())){
                 self.rarityLookup.insert(key: component.getSeries(), {} as {String: {String: {UInt64: UInt64}}})
             }
@@ -111,7 +111,7 @@ pub contract FlovatarComponentUpgrader {
             destroy oldComponent
         }
 
-        pub fun withdrawComponent(id: UInt64) : @FlovatarComponent.NFT {
+        access(all) fun withdrawComponent(id: UInt64) : @FlovatarComponent.NFT {
             let component <- self.flovatarComponents.remove(key: id) ?? panic("missing NFT")
 
             self.rarityLookup[component.getSeries()]![component.getRarity()]!["all"]!.remove(key: component.id)
@@ -119,7 +119,7 @@ pub contract FlovatarComponentUpgrader {
 
             return <- component
         }
-        pub fun withdrawRandomComponent(series: UInt32, rarity: String, category: String?) : @FlovatarComponent.NFT {
+        access(all) fun withdrawRandomComponent(series: UInt32, rarity: String, category: String?) : @FlovatarComponent.NFT {
             //FILTER BY SERIES AND RARITY AND THEN RANDOMIZE AND PICK ONE
             var components: [UInt64] = []
             if(self.rarityLookup[series] == nil){
@@ -160,13 +160,11 @@ pub contract FlovatarComponentUpgrader {
             return <- component
         }
 
-        pub fun getComponentIDs(): [UInt64] {
+        access(all) fun getComponentIDs(): [UInt64] {
             return self.flovatarComponents.keys
         }
 
-        destroy() {
-            destroy self.flovatarComponents
-        }
+        
     }
 
 
@@ -179,14 +177,14 @@ pub contract FlovatarComponentUpgrader {
 
 
     // This function withdraws all the Components assigned to a Flovatar and sends them to the Owner's address
-    pub fun upgradeFlovatarComponent(components: @[FlovatarComponent.NFT], vault: @FungibleToken.Vault, address: Address) {
+    access(all) fun upgradeFlovatarComponent(components: @[FlovatarComponent.NFT], vault: @{FungibleToken.Vault}, address: Address) {
         pre {
         	self.upgradeEnabled : "Upgrade is not enabled!"
             vault.balance == 20.0 : "The amount of $DUST is not correct"
             vault.isInstance(Type<@FlovatarDustToken.Vault>()) : "Vault not of the right Token Type"
             components.length == 10 : "You need to provide exactly 10 Flobits for the upgrade"
         }
-        if let upgraderCollection = self.account.borrow<&FlovatarComponentUpgrader.Collection>(from: self.CollectionStoragePath) {
+        if let upgraderCollection = self.account.storage.borrow<&FlovatarComponentUpgrader.Collection>(from: self.CollectionStoragePath) {
 
             var componentSeries: UInt32 = 0
             var checkCategory: Bool = true
@@ -238,7 +236,7 @@ pub contract FlovatarComponentUpgrader {
             destroy components
             destroy vault
 
-            if let inboxCollection = self.account.borrow<&FlovatarInbox.Collection>(from: FlovatarInbox.CollectionStoragePath) {
+            if let inboxCollection = self.account.storage.borrow<&FlovatarInbox.Collection>(from: FlovatarInbox.CollectionStoragePath) {
                 inboxCollection.depositComponentToWallet(address: address, component: <- component)
             } else {
                 panic("Couldn't borrow Flovatar Inbox Collection")
@@ -262,8 +260,10 @@ pub contract FlovatarComponentUpgrader {
         self.CollectionPublicPath=/public/FlovatarComponentUpgraderCollection
         self.CollectionStoragePath=/storage/FlovatarComponentUpgraderCollection
 
-        self.account.save<@FlovatarComponentUpgrader.Collection>(<- FlovatarComponentUpgrader.createEmptyCollection(), to: FlovatarComponentUpgrader.CollectionStoragePath)
-        self.account.link<&{FlovatarComponentUpgrader.CollectionPublic}>(FlovatarComponentUpgrader.CollectionPublicPath, target: FlovatarComponentUpgrader.CollectionStoragePath)
+        self.account.storage.save<@FlovatarComponentUpgrader.Collection>(<- FlovatarComponentUpgrader.createEmptyCollection(), to: FlovatarComponentUpgrader.CollectionStoragePath)
+        var _capForLinked1 = self.account.capabilities.storage.issue<&{FlovatarComponentUpgrader.CollectionPublic}>( FlovatarComponentUpgrader.CollectionStoragePath)
+self.account.capabilities.publish(_capForLinked1 , at:FlovatarComponentUpgrader.CollectionPublicPath)
+
 
         emit ContractInitialized()
 	}

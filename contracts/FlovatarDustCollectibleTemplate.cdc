@@ -9,15 +9,15 @@
 
  */
 
-pub contract FlovatarDustCollectibleTemplate {
+access(all) contract FlovatarDustCollectibleTemplate {
 
-    pub let CollectionStoragePath: StoragePath
-    pub let CollectionPublicPath: PublicPath
+    access(all) let CollectionStoragePath: StoragePath
+    access(all) let CollectionPublicPath: PublicPath
 
 
     // Counter for all the Templates ever minted
-    pub var totalSupply: UInt64
-    pub var totalSeriesSupply: UInt64
+    access(all) var totalSupply: UInt64
+    access(all) var totalSeriesSupply: UInt64
     //These counters will keep track of how many Components were minted for each Template
     access(contract) let totalMintedComponents: { UInt64: UInt64 }
     access(contract) let totalMintedCollectibles: { UInt64: UInt64 }
@@ -25,14 +25,14 @@ pub contract FlovatarDustCollectibleTemplate {
     access(contract) let lastComponentMintedAt: { UInt64: UFix64 }
 
     // Event to notify about the Template creation
-    pub event ContractInitialized()
-    pub event Created(id: UInt64, name: String, series: UInt64, layer: UInt32, maxMintableComponents: UInt64)
-    pub event CreatedSeries(id: UInt64, name: String, maxMintable: UInt64)
+    access(all) event ContractInitialized()
+    access(all) event Created(id: UInt64, name: String, series: UInt64, layer: UInt32, maxMintableComponents: UInt64)
+    access(all) event CreatedSeries(id: UInt64, name: String, maxMintable: UInt64)
 
-    pub struct Layer{
-        pub let id: UInt32
-        pub let name: String
-        pub let isAccessory: Bool
+    access(all) struct Layer{
+        access(all) let id: UInt32
+        access(all) let name: String
+        access(all) let isAccessory: Bool
 
         init(id: UInt32, name: String, isAccessory: Bool){
             self.id = id
@@ -41,42 +41,42 @@ pub contract FlovatarDustCollectibleTemplate {
         }
     }
 
-    pub resource interface PublicSeries {
-        pub let id: UInt64
-        pub let name: String
-        pub let description: String
-        pub let svgPrefix: String
-        pub let svgSuffix: String
-        pub let priceIncrease: UFix64
+    access(all) resource interface PublicSeries {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let description: String
+        access(all) let svgPrefix: String
+        access(all) let svgSuffix: String
+        access(all) let priceIncrease: UFix64
         access(contract) let layers: {UInt32: Layer}
         access(contract) let colors: {UInt32: String}
         access(contract) let metadata: {String: String}
-        pub let maxMintable: UInt64
-        pub fun getLayers(): {UInt32: Layer}
-        pub fun getColors(): {UInt32: String}
-        pub fun getMetadata(): {String: String}
+        access(all) let maxMintable: UInt64
+        access(all) fun getLayers(): {UInt32: Layer}
+        access(all) fun getColors(): {UInt32: String}
+        access(all) fun getMetadata(): {String: String}
     }
 
     // The Series resource implementing the public interface as well
-    pub resource CollectibleSeries: PublicSeries {
-        pub let id: UInt64
-        pub let name: String
-        pub let description: String
-        pub let svgPrefix: String
-        pub let svgSuffix: String
-        pub let priceIncrease: UFix64
+    access(all) resource CollectibleSeries: PublicSeries {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let description: String
+        access(all) let svgPrefix: String
+        access(all) let svgSuffix: String
+        access(all) let priceIncrease: UFix64
         access(contract) let layers: {UInt32: Layer}
         access(contract) let colors: {UInt32: String}
         access(contract) let metadata: {String: String}
-        pub let maxMintable: UInt64
+        access(all) let maxMintable: UInt64
 
-        pub fun getLayers(): {UInt32: Layer} {
+        access(all) fun getLayers(): {UInt32: Layer} {
             return self.layers
         }
-        pub fun getColors(): {UInt32: String} {
+        access(all) fun getColors(): {UInt32: String} {
             return self.colors
         }
-        pub fun getMetadata(): {String: String} {
+        access(all) fun getMetadata(): {String: String} {
             return self.metadata
         }
 
@@ -108,35 +108,35 @@ pub contract FlovatarDustCollectibleTemplate {
 
     // The public interface providing the SVG and all the other 
     // metadata like name, series, layer, etc.
-    pub resource interface Public {
-        pub let id: UInt64
-        pub let name: String
-        pub let description: String
-        pub let series: UInt64
-        pub let layer: UInt32
+    access(all) resource interface Public {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let description: String
+        access(all) let series: UInt64
+        access(all) let layer: UInt32
         access(contract) let metadata: {String: String}
-        pub let rarity: String
-        pub let basePrice: UFix64
-        pub let svg: String
-        pub let maxMintableComponents: UInt64
+        access(all) let rarity: String
+        access(all) let basePrice: UFix64
+        access(all) let svg: String
+        access(all) let maxMintableComponents: UInt64
 
-        pub fun getMetadata(): {String: String} {
+        access(all) fun getMetadata(): {String: String} {
             return self.metadata
         }
     }
 
     // The Template resource implementing the public interface as well
-    pub resource CollectibleTemplate: Public {
-        pub let id: UInt64
-        pub let name: String
-        pub let description: String
-        pub let series: UInt64
-        pub let layer: UInt32
+    access(all) resource CollectibleTemplate: Public {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let description: String
+        access(all) let series: UInt64
+        access(all) let layer: UInt32
         access(contract) let metadata: {String: String}
-        pub let rarity: String
-        pub let basePrice: UFix64
-        pub let svg: String
-        pub let maxMintableComponents: UInt64
+        access(all) let rarity: String
+        access(all) let basePrice: UFix64
+        access(all) let svg: String
+        access(all) let maxMintableComponents: UInt64
 
         // Initialize a Template with all the necessary data
         init(
@@ -166,18 +166,18 @@ pub contract FlovatarDustCollectibleTemplate {
     }
 
     // Standard CollectionPublic interface that can also borrow Component Templates
-    pub resource interface CollectionPublic {
-        pub fun getIDs(): [UInt64]
-        pub fun getSeriesIDs(): [UInt64]
-        pub fun borrowCollectibleTemplate(id: UInt64): &{FlovatarDustCollectibleTemplate.Public}?
-        pub fun borrowCollectibleSeries(id: UInt64): &{FlovatarDustCollectibleTemplate.PublicSeries}?
+    access(all) resource interface CollectionPublic {
+        access(all) fun getIDs(): [UInt64]
+        access(all) fun getSeriesIDs(): [UInt64]
+        access(all) fun borrowCollectibleTemplate(id: UInt64): &{FlovatarDustCollectibleTemplate.Public}?
+        access(all) fun borrowCollectibleSeries(id: UInt64): &{FlovatarDustCollectibleTemplate.PublicSeries}?
     }
 
     // The main Collection that manages the Templates and that implements also the Public interface
-    pub resource Collection: CollectionPublic {
+    access(all) resource Collection: CollectionPublic {
         // Dictionary of Component Templates
-        pub var ownedCollectibleTemplates: @{UInt64: FlovatarDustCollectibleTemplate.CollectibleTemplate}
-        pub var ownedCollectibleSeries: @{UInt64: FlovatarDustCollectibleTemplate.CollectibleSeries}
+        access(all) var ownedCollectibleTemplates: @{UInt64: FlovatarDustCollectibleTemplate.CollectibleTemplate}
+        access(all) var ownedCollectibleSeries: @{UInt64: FlovatarDustCollectibleTemplate.CollectibleSeries}
 
         init () {
             self.ownedCollectibleTemplates <- {}
@@ -188,7 +188,7 @@ pub contract FlovatarDustCollectibleTemplate {
 
         // deposit takes a Component Template and adds it to the collections dictionary
         // and adds the ID to the id array
-        pub fun deposit(collectibleTemplate: @FlovatarDustCollectibleTemplate.CollectibleTemplate) {
+        access(all) fun deposit(collectibleTemplate: @FlovatarDustCollectibleTemplate.CollectibleTemplate) {
 
             let id: UInt64 = collectibleTemplate.id
 
@@ -200,7 +200,7 @@ pub contract FlovatarDustCollectibleTemplate {
 
         // deposit takes a Series and adds it to the collections dictionary
         // and adds the ID to the id array
-        pub fun depositSeries(collectibleSeries: @FlovatarDustCollectibleTemplate.CollectibleSeries) {
+        access(all) fun depositSeries(collectibleSeries: @FlovatarDustCollectibleTemplate.CollectibleSeries) {
 
             let id: UInt64 = collectibleSeries.id
 
@@ -211,20 +211,20 @@ pub contract FlovatarDustCollectibleTemplate {
         }
 
         // getIDs returns an array of the IDs that are in the collection
-        pub fun getIDs(): [UInt64] {
+        access(all) fun getIDs(): [UInt64] {
             return self.ownedCollectibleTemplates.keys
         }
 
         // getIDs returns an array of the IDs that are in the collection
-        pub fun getSeriesIDs(): [UInt64] {
+        access(all) fun getSeriesIDs(): [UInt64] {
             return self.ownedCollectibleSeries.keys
         }
 
         // borrowCollectibleTemplate returns a borrowed reference to a Component Template
         // so that the caller can read data and call methods from it.
-        pub fun borrowCollectibleTemplate(id: UInt64): &{FlovatarDustCollectibleTemplate.Public}? {
+        access(all) fun borrowCollectibleTemplate(id: UInt64): &{FlovatarDustCollectibleTemplate.Public}? {
             if self.ownedCollectibleTemplates[id] != nil {
-                let ref = (&self.ownedCollectibleTemplates[id] as auth &FlovatarDustCollectibleTemplate.CollectibleTemplate?)!
+                let ref = (&self.ownedCollectibleTemplates[id] as &FlovatarDustCollectibleTemplate.CollectibleTemplate?)!
                 return ref as! &FlovatarDustCollectibleTemplate.CollectibleTemplate
             } else {
                 return nil
@@ -233,19 +233,16 @@ pub contract FlovatarDustCollectibleTemplate {
 
         // borrowCollectibleTemplate returns a borrowed reference to a Component Template
         // so that the caller can read data and call methods from it.
-        pub fun borrowCollectibleSeries(id: UInt64): &{FlovatarDustCollectibleTemplate.PublicSeries}? {
+        access(all) fun borrowCollectibleSeries(id: UInt64): &{FlovatarDustCollectibleTemplate.PublicSeries}? {
             if self.ownedCollectibleSeries[id] != nil {
-                let ref = (&self.ownedCollectibleSeries[id] as auth &FlovatarDustCollectibleTemplate.CollectibleSeries?)!
+                let ref = (&self.ownedCollectibleSeries[id] as &FlovatarDustCollectibleTemplate.CollectibleSeries?)!
                 return ref as! &FlovatarDustCollectibleTemplate.CollectibleSeries
             } else {
                 return nil
             }
         }
 
-        destroy() {
-            destroy self.ownedCollectibleTemplates
-            destroy self.ownedCollectibleSeries
-        }
+        
     }
 
     // This function can only be called by the account owner to create an empty Collection
@@ -258,18 +255,18 @@ pub contract FlovatarDustCollectibleTemplate {
 
     // This struct is used to send a data representation of the Templates
     // when retrieved using the contract helper methods outside the collection.
-    pub struct CollectibleSeriesData {
-        pub let id: UInt64
-        pub let name: String
-        pub let description: String
-        pub let svgPrefix: String
-        pub let svgSuffix: String
-        pub let priceIncrease: UFix64
-        pub let layers: {UInt32: Layer}
-        pub let colors: {UInt32: String}
-        pub let metadata: {String: String}
-        pub let maxMintable: UInt64
-        pub let totalMintedCollectibles: UInt64
+    access(all) struct CollectibleSeriesData {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let description: String
+        access(all) let svgPrefix: String
+        access(all) let svgSuffix: String
+        access(all) let priceIncrease: UFix64
+        access(all) let layers: {UInt32: Layer}
+        access(all) let colors: {UInt32: String}
+        access(all) let metadata: {String: String}
+        access(all) let maxMintable: UInt64
+        access(all) let totalMintedCollectibles: UInt64
 
         init(
             id: UInt64,
@@ -299,20 +296,20 @@ pub contract FlovatarDustCollectibleTemplate {
 
     // This struct is used to send a data representation of the Templates 
     // when retrieved using the contract helper methods outside the collection.
-    pub struct CollectibleTemplateData {
-        pub let id: UInt64
-        pub let name: String
-        pub let description: String
-        pub let series: UInt64
-        pub let layer: UInt32
-        pub let metadata: {String: String}
-        pub let rarity: String
-        pub let basePrice: UFix64
-        pub let svg: String?
-        pub let maxMintableComponents: UInt64
-        pub let totalMintedComponents: UInt64
-        pub let currentPrice: UFix64
-        pub let lastComponentMintedAt: UFix64
+    access(all) struct CollectibleTemplateData {
+        access(all) let id: UInt64
+        access(all) let name: String
+        access(all) let description: String
+        access(all) let series: UInt64
+        access(all) let layer: UInt32
+        access(all) let metadata: {String: String}
+        access(all) let rarity: String
+        access(all) let basePrice: UFix64
+        access(all) let svg: String?
+        access(all) let maxMintableComponents: UInt64
+        access(all) let totalMintedComponents: UInt64
+        access(all) let currentPrice: UFix64
+        access(all) let lastComponentMintedAt: UFix64
 
         init(
             id: UInt64,
@@ -344,10 +341,10 @@ pub contract FlovatarDustCollectibleTemplate {
 
     // Get all the Component Templates from the account. 
     // We hide the SVG field because it might be too big to execute in a script
-    pub fun getCollectibleTemplates() : [CollectibleTemplateData] {
+    access(all) fun getCollectibleTemplates() : [CollectibleTemplateData] {
         var collectibleTemplateData: [CollectibleTemplateData] = []
 
-        if let collectibleTemplateCollection = self.account.getCapability(self.CollectionPublicPath).borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
+        if let collectibleTemplateCollection = self.account.capabilities.get(self.CollectionPublicPath)!.borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
             for id in collectibleTemplateCollection.getIDs() {
                 var collectibleTemplate = collectibleTemplateCollection.borrowCollectibleTemplate(id: id)
                 collectibleTemplateData.append(CollectibleTemplateData(
@@ -370,10 +367,10 @@ pub contract FlovatarDustCollectibleTemplate {
 
     // Get all the Series from the account.
     // We hide the SVG field because it might be too big to execute in a script
-    pub fun getCollectibleSeriesAll() : [CollectibleSeriesData] {
+    access(all) fun getCollectibleSeriesAll() : [CollectibleSeriesData] {
         var collectibleSeriesData: [CollectibleSeriesData] = []
 
-        if let collectibleTemplateCollection = self.account.getCapability(self.CollectionPublicPath).borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
+        if let collectibleTemplateCollection = self.account.capabilities.get(self.CollectionPublicPath)!.borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
             for id in collectibleTemplateCollection.getSeriesIDs() {
                 var collectibleSeries = collectibleTemplateCollection.borrowCollectibleSeries(id: id)
                 collectibleSeriesData.append(CollectibleSeriesData(
@@ -394,8 +391,8 @@ pub contract FlovatarDustCollectibleTemplate {
     }
 
     // Gets a specific Template from its ID
-    pub fun getCollectibleTemplate(id: UInt64) : CollectibleTemplateData? {
-        if let collectibleTemplateCollection = self.account.getCapability(self.CollectionPublicPath).borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
+    access(all) fun getCollectibleTemplate(id: UInt64) : CollectibleTemplateData? {
+        if let collectibleTemplateCollection = self.account.capabilities.get(self.CollectionPublicPath)!.borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
             if let collectibleTemplate = collectibleTemplateCollection.borrowCollectibleTemplate(id: id) {
                 return CollectibleTemplateData(
                     id: id,
@@ -415,8 +412,8 @@ pub contract FlovatarDustCollectibleTemplate {
     }
 
     // Gets the SVG of a specific Template from its ID
-    pub fun getCollectibleTemplateSvg(id: UInt64) : String? {
-        if let collectibleTemplateCollection = self.account.getCapability(self.CollectionPublicPath).borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
+    access(all) fun getCollectibleTemplateSvg(id: UInt64) : String? {
+        if let collectibleTemplateCollection = self.account.capabilities.get(self.CollectionPublicPath)!.borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
             if let collectibleTemplate = collectibleTemplateCollection.borrowCollectibleTemplate(id: id) {
                 return collectibleTemplate!.svg
             }
@@ -426,8 +423,8 @@ pub contract FlovatarDustCollectibleTemplate {
 
 
     // Gets a specific Series from its ID
-    pub fun getCollectibleSeries(id: UInt64) : CollectibleSeriesData? {
-        if let collectibleTemplateCollection = self.account.getCapability(self.CollectionPublicPath).borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
+    access(all) fun getCollectibleSeries(id: UInt64) : CollectibleSeriesData? {
+        if let collectibleTemplateCollection = self.account.capabilities.get(self.CollectionPublicPath)!.borrow<&{FlovatarDustCollectibleTemplate.CollectionPublic}>()  {
             if let collectibleSeries = collectibleTemplateCollection.borrowCollectibleSeries(id: id) {
                 return CollectibleSeriesData(
                     id: id,
@@ -446,7 +443,7 @@ pub contract FlovatarDustCollectibleTemplate {
         return nil
     }
 
-    pub fun isCollectibleLayerAccessory(layer: UInt32, series: UInt64): Bool {
+    access(all) fun isCollectibleLayerAccessory(layer: UInt32, series: UInt64): Bool {
         let series = FlovatarDustCollectibleTemplate.getCollectibleSeries(id: series)!
         if let layer = series.layers[layer] {
             if(layer.isAccessory){
@@ -457,20 +454,20 @@ pub contract FlovatarDustCollectibleTemplate {
     }
 
     // Returns the amount of minted Components for a specific Template
-    pub fun getTotalMintedComponents(id: UInt64) : UInt64? {
+    access(all) fun getTotalMintedComponents(id: UInt64) : UInt64? {
         return FlovatarDustCollectibleTemplate.totalMintedComponents[id]
     }
     // Returns the amount of minted Collectibles for a specific Series
-    pub fun getTotalMintedCollectibles(series: UInt64) : UInt64? {
+    access(all) fun getTotalMintedCollectibles(series: UInt64) : UInt64? {
         return FlovatarDustCollectibleTemplate.totalMintedCollectibles[series]
     }
     // Returns the current price for a specific Template
-    pub fun getTemplateCurrentPrice(id: UInt64) : UFix64? {
+    access(all) fun getTemplateCurrentPrice(id: UInt64) : UFix64? {
         return FlovatarDustCollectibleTemplate.templatesCurrentPrice[id]
     }
 
     // Returns the timestamp of the last time a Component for a specific Template was minted
-    pub fun getLastComponentMintedAt(id: UInt64) : UFix64? {
+    access(all) fun getLastComponentMintedAt(id: UInt64) : UFix64? {
         return FlovatarDustCollectibleTemplate.lastComponentMintedAt[id]
     }
 
@@ -595,8 +592,10 @@ pub contract FlovatarDustCollectibleTemplate {
         self.templatesCurrentPrice = {}
         self.lastComponentMintedAt = {}
 
-        self.account.save<@FlovatarDustCollectibleTemplate.Collection>(<- FlovatarDustCollectibleTemplate.createEmptyCollection(), to: FlovatarDustCollectibleTemplate.CollectionStoragePath)
-        self.account.link<&{FlovatarDustCollectibleTemplate.CollectionPublic}>(FlovatarDustCollectibleTemplate.CollectionPublicPath, target: FlovatarDustCollectibleTemplate.CollectionStoragePath)
+        self.account.storage.save<@FlovatarDustCollectibleTemplate.Collection>(<- FlovatarDustCollectibleTemplate.createEmptyCollection(), to: FlovatarDustCollectibleTemplate.CollectionStoragePath)
+        var _capForLinked1 = self.account.capabilities.storage.issue<&{FlovatarDustCollectibleTemplate.CollectionPublic}>( FlovatarDustCollectibleTemplate.CollectionStoragePath)
+self.account.capabilities.publish(_capForLinked1 , at:FlovatarDustCollectibleTemplate.CollectionPublicPath)
+
 
         emit ContractInitialized()
 	}

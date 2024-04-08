@@ -4,13 +4,15 @@
 //import FlovatarDustCollectibleTemplate from 0x921ea449dffec68a
 //import MetadataViews from 0x1d7e57aa55817448
 //import FlovatarDustToken from 0x921ea449dffec68a
-import FungibleToken from "./FungibleToken.cdc"
-import NonFungibleToken from "./NonFungibleToken.cdc"
-import FlowToken from "./FlowToken.cdc"
-import FlovatarDustCollectibleTemplate from "./FlovatarDustCollectibleTemplate.cdc"
-import FlovatarDustCollectibleAccessory from "./FlovatarDustCollectibleAccessory.cdc"
-import MetadataViews from "./MetadataViews.cdc"
-import FlovatarDustToken from "./FlovatarDustToken.cdc"
+import FungibleToken from "FungibleToken"
+import "ViewResolver"
+
+import NonFungibleToken from "NonFungibleToken"
+import FlowToken from "FlowToken"
+import FlovatarDustCollectibleTemplate from "FlovatarDustCollectibleTemplate"
+import FlovatarDustCollectibleAccessory from "FlovatarDustCollectibleAccessory"
+import MetadataViews from "MetadataViews"
+import FlovatarDustToken from "FlovatarDustToken"
 
 /*
 
@@ -21,11 +23,11 @@ This contract contains also the Admin resource that can be used to manage and ge
 
  */
 
-pub contract FlovatarDustCollectible: NonFungibleToken {
+access(all) contract FlovatarDustCollectible: NonFungibleToken {
 
-    pub let CollectionStoragePath: StoragePath
-    pub let CollectionPublicPath: PublicPath
-    pub let AdminStoragePath: StoragePath
+    access(all) let CollectionStoragePath: StoragePath
+    access(all) let CollectionPublicPath: PublicPath
+    access(all) let AdminStoragePath: StoragePath
 
     // These will be used in the Marketplace to pay out
     // royalties to the creator and to the marketplace
@@ -34,39 +36,39 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
     // Here we keep track of all the Flovatar unique combinations and names
     // that people will generate to make sure that there are no duplicates
-    pub var totalSupply: UInt64
+    access(all) var totalSupply: UInt64
     access(contract) let mintedCombinations: {String: Bool}
     access(contract) let mintedNames: {String: Bool}
 
-    pub event ContractInitialized()
-    pub event Withdraw(id: UInt64, from: Address?)
-    pub event Deposit(id: UInt64, to: Address?)
-    pub event Created(id: UInt64, mint: UInt64, series: UInt64, address: Address)
-    pub event Updated(id: UInt64)
-    pub event Destroyed(id: UInt64)
-    pub event NameSet(id: UInt64, name: String)
-    pub event PositionChanged(id: UInt64, position: String)
-    pub event StoryAdded(id: UInt64, story: String)
+    access(all) event ContractInitialized()
+    access(all) event Withdraw(id: UInt64, from: Address?)
+    access(all) event Deposit(id: UInt64, to: Address?)
+    access(all) event Created(id: UInt64, mint: UInt64, series: UInt64, address: Address)
+    access(all) event Updated(id: UInt64)
+    access(all) event Destroyed(id: UInt64)
+    access(all) event NameSet(id: UInt64, name: String)
+    access(all) event PositionChanged(id: UInt64, position: String)
+    access(all) event StoryAdded(id: UInt64, story: String)
 
 
-    pub struct Royalties{
-        pub let royalty: [Royalty]
+    access(all) struct Royalties{
+        access(all) let royalty: [Royalty]
         init(royalty: [Royalty]) {
             self.royalty=royalty
         }
     }
 
-    pub enum RoyaltyType: UInt8{
-        pub case fixed
-        pub case percentage
+    access(all) enum RoyaltyType: UInt8{
+        access(all) case fixed
+        access(all) case percentage
     }
 
-    pub struct Royalty{
-        pub let wallet:Capability<&{FungibleToken.Receiver}>
-        pub let cut: UFix64
+    access(all) struct Royalty{
+        access(all) let wallet:Capability<&{FungibleToken.Receiver}>
+        access(all) let cut: UFix64
 
         //can be percentage
-        pub let type: RoyaltyType
+        access(all) let type: RoyaltyType
 
         init(wallet:Capability<&{FungibleToken.Receiver}>, cut: UFix64, type: RoyaltyType ){
             if(! wallet.check()){
@@ -81,53 +83,53 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
 
     // The public interface can show metadata and the content for the Dust Collectible
-    pub resource interface Public {
-        pub let id: UInt64
-        pub let mint: UInt64
-        pub let series: UInt64
-        pub let combination: String
-        pub let creatorAddress: Address
-        pub let createdAt: UFix64
+    access(all) resource interface Public {
+        access(all) let id: UInt64
+        access(all) let mint: UInt64
+        access(all) let series: UInt64
+        access(all) let combination: String
+        access(all) let creatorAddress: Address
+        access(all) let createdAt: UFix64
         access(contract) let royalties: Royalties
 
         // these three are added because I think they will be in the standard. At least Dieter thinks it will be needed
         access(contract) var name: String
-        pub let description: String
-        pub let schema: String?
+        access(all) let description: String
+        access(all) let schema: String?
 
-        pub fun getName(): String
-        pub fun getSvg(): String
-        pub fun getRoyalties(): Royalties
-        pub fun getBio(): {String: String}
-        pub fun getMetadata(): {String: String}
-        pub fun getLayers(): {UInt32: UInt64?}
-        pub fun getAccessories(): [UInt64]
-        pub fun getSeries(): FlovatarDustCollectibleTemplate.CollectibleSeriesData?
+        access(all) fun getName(): String
+        access(all) fun getSvg(): String
+        access(all) fun getRoyalties(): Royalties
+        access(all) fun getBio(): {String: String}
+        access(all) fun getMetadata(): {String: String}
+        access(all) fun getLayers(): {UInt32: UInt64?}
+        access(all) fun getAccessories(): [UInt64]
+        access(all) fun getSeries(): FlovatarDustCollectibleTemplate.CollectibleSeriesData?
     }
 
     //The private interface can update the Accessory, Hat, Eyeglasses and Background
     //for the Flovatar and is accessible only to the owner of the NFT
-    pub resource interface Private {
-        pub fun setName(name: String, vault: @FungibleToken.Vault): String
-        pub fun addStory(text: String, vault: @FungibleToken.Vault): String
-        pub fun setPosition(latitude: Fix64, longitude: Fix64, vault: @FungibleToken.Vault): String
-        pub fun setAccessory(layer: UInt32, accessory: @FlovatarDustCollectibleAccessory.NFT): @FlovatarDustCollectibleAccessory.NFT?
-        pub fun removeAccessory(layer: UInt32): @FlovatarDustCollectibleAccessory.NFT?
+    access(all) resource interface Private {
+        access(all) fun setName(name: String, vault: @{FungibleToken.Vault}): String
+        access(all) fun addStory(text: String, vault: @{FungibleToken.Vault}): String
+        access(all) fun setPosition(latitude: Fix64, longitude: Fix64, vault: @{FungibleToken.Vault}): String
+        access(all) fun setAccessory(layer: UInt32, accessory: @FlovatarDustCollectibleAccessory.NFT): @FlovatarDustCollectibleAccessory.NFT?
+        access(all) fun removeAccessory(layer: UInt32): @FlovatarDustCollectibleAccessory.NFT?
     }
 
     //The NFT resource that implements both Private and Public interfaces
-    pub resource NFT: NonFungibleToken.INFT, Public, Private, MetadataViews.Resolver {
-        pub let id: UInt64
-        pub let mint: UInt64
-        pub let series: UInt64
-        pub let combination: String
-        pub let creatorAddress: Address
-        pub let createdAt: UFix64
+    access(all) resource NFT: NonFungibleToken.INFT, Public, Private, ViewResolver.Resolver {
+        access(all) let id: UInt64
+        access(all) let mint: UInt64
+        access(all) let series: UInt64
+        access(all) let combination: String
+        access(all) let creatorAddress: Address
+        access(all) let createdAt: UFix64
         access(contract) let royalties: Royalties
 
         access(contract) var name: String
-        pub let description: String
-        pub let schema: String?
+        access(all) let description: String
+        access(all) let schema: String?
         access(self) let bio: {String: String}
         access(self) let metadata: {String: String}
         access(self) let layers: {UInt32: UInt64?}
@@ -158,39 +160,36 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
             self.accessories <- {}
         }
 
-        destroy() {
-            destroy self.accessories
-            emit Destroyed(id: self.id)
-        }
+        
 
-        pub fun getID(): UInt64 {
+        access(all) fun getID(): UInt64 {
             return self.id
         }
 
-        pub fun getMetadata(): {String: String} {
+        access(all) fun getMetadata(): {String: String} {
             return self.metadata
         }
 
-        pub fun getRoyalties(): Royalties {
+        access(all) fun getRoyalties(): Royalties {
             return self.royalties
         }
 
-        pub fun getBio(): {String: String} {
+        access(all) fun getBio(): {String: String} {
             return self.bio
         }
 
-        pub fun getName(): String {
+        access(all) fun getName(): String {
             return self.name
         }
 
-        pub fun getSeries(): FlovatarDustCollectibleTemplate.CollectibleSeriesData? {
+        access(all) fun getSeries(): FlovatarDustCollectibleTemplate.CollectibleSeriesData? {
             return FlovatarDustCollectibleTemplate.getCollectibleSeries(id: self.series)
         }
 
         // This will allow to change the Name of the Flovatar only once.
         // It checks for the current name is empty, otherwise it will throw an error.
         // $DUST vault must contain 100 tokens that will be burned in the process
-        pub fun setName(name: String, vault: @FungibleToken.Vault): String {
+        access(all) fun setName(name: String, vault: @{FungibleToken.Vault}): String {
             pre {
                 // TODO: Make sure that the text of the name is sanitized
                 //and that bad words are not accepted?
@@ -221,7 +220,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         // The String will be concatenated each time.
         // There is a limit of 300 characters per story but there is no limit in the full concatenated story length
         // $DUST vault must contain 50 tokens that will be burned in the process
-        pub fun addStory(text: String, vault: @FungibleToken.Vault): String {
+        access(all) fun addStory(text: String, vault: @{FungibleToken.Vault}): String {
             pre {
                 // TODO: Make sure that the text of the name is sanitized
                 //and that bad words are not accepted?
@@ -245,7 +244,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         // This will allow to set the GPS location of a Flovatar
         // It can be run multiple times and each time it will override the previous state
         // $DUST vault must contain 10 tokens that will be burned in the process
-        pub fun setPosition(latitude: Fix64, longitude: Fix64, vault: @FungibleToken.Vault): String {
+        access(all) fun setPosition(latitude: Fix64, longitude: Fix64, vault: @{FungibleToken.Vault}): String {
             pre {
                 latitude >= -90.0 : "The latitude is out of range"
                 latitude <= 90.0 : "The latitude is out of range"
@@ -264,12 +263,12 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
             return position
         }
 
-        pub fun getLayers(): {UInt32: UInt64?} {
+        access(all) fun getLayers(): {UInt32: UInt64?} {
             return self.layers
         }
 
 
-        pub fun getAccessories(): [UInt64] {
+        access(all) fun getAccessories(): [UInt64] {
             let accessoriesIds: [UInt64] = []
             for k in self.accessories.keys {
                 let accessoryId = self.accessories[k]?.id
@@ -281,7 +280,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         }
         // This will allow to change the Accessory of the Flovatar any time.
         // It checks for the right category and series before executing.
-        pub fun setAccessory(layer: UInt32, accessory: @FlovatarDustCollectibleAccessory.NFT): @FlovatarDustCollectibleAccessory.NFT? {
+        access(all) fun setAccessory(layer: UInt32, accessory: @FlovatarDustCollectibleAccessory.NFT): @FlovatarDustCollectibleAccessory.NFT? {
             pre {
                 accessory.getSeries() == self.series : "The accessory belongs to a different series"
             }
@@ -299,7 +298,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         }
 
         // This will allow to remove the Accessory of the Flovatar any time.
-        pub fun removeAccessory(layer: UInt32): @FlovatarDustCollectibleAccessory.NFT? {
+        access(all) fun removeAccessory(layer: UInt32): @FlovatarDustCollectibleAccessory.NFT? {
             if(FlovatarDustCollectibleTemplate.isCollectibleLayerAccessory(layer: layer, series: self.series)){
                 emit Updated(id: self.id)
                 self.layers[layer] = nil
@@ -315,7 +314,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         // optional components (Accessory, Hat, Eyeglasses and Background) from their
         // original Template resources, while all the other unmutable components are
         // taken from the Metadata directly.
-        pub fun getSvg(): String {
+        access(all) fun getSvg(): String {
             let series = FlovatarDustCollectibleTemplate.getCollectibleSeries(id: self.series)
 
             let layersArr: [String] = []
@@ -348,7 +347,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         }
 
 
-        pub fun getViews() : [Type] {
+        access(all) view fun getViews(): [Type]{
             var views : [Type]=[]
             views.append(Type<MetadataViews.NFTCollectionData>())
             views.append(Type<MetadataViews.NFTCollectionDisplay>())
@@ -360,7 +359,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
             views.append(Type<MetadataViews.Traits>())
             return views
         }
-        pub fun resolveView(_ type: Type): AnyStruct? {
+        access(all) fun resolveView(_ type: Type): AnyStruct? {
 
             if type == Type<MetadataViews.ExternalURL>() {
                 return MetadataViews.ExternalURL("https://flovatar.com/collectibles/".concat(self.id.toString()))
@@ -370,10 +369,10 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
                 let royalties : [MetadataViews.Royalty] = []
                 var count: Int = 0
                 for royalty in self.royalties.royalty {
-                    royalties.append(MetadataViews.Royalty(recepient: royalty.wallet, cut: royalty.cut, description: "Flovatar Royalty ".concat(count.toString())))
+                    royalties.append(MetadataViews.Royalty(receiver: royalty.wallet, cut: royalty.cut, description: "Flovatar Royalty ".concat(count.toString())))
                     count = count + Int(1)
                 }
-                return MetadataViews.Royalties(cutInfos: royalties)
+                return MetadataViews.Royalties( royalties)
             }
 
             if type == Type<MetadataViews.Serial>() {
@@ -454,29 +453,29 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
             }
 
             if type == Type<MetadataViews.NFTCollectionData>() {
-                return MetadataViews.NFTCollectionData(
-                storagePath: FlovatarDustCollectible.CollectionStoragePath,
-                publicPath: FlovatarDustCollectible.CollectionPublicPath,
-                providerPath: /private/FlovatarDustCollectibleCollection,
-                publicCollection: Type<&FlovatarDustCollectible.Collection{NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection, FlovatarDustCollectible.CollectionPublic}>(),
-                publicLinkedType: Type<&FlovatarDustCollectible.Collection{NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection, FlovatarDustCollectible.CollectionPublic}>(),
-                providerLinkedType: Type<&FlovatarDustCollectible.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection, FlovatarDustCollectible.CollectionPublic}>(),
-                createEmptyCollectionFunction: fun(): @NonFungibleToken.Collection {return <- FlovatarDustCollectible.createEmptyCollection()}
-                )
+                return MetadataViews.NFTCollectionData(storagePath: FlovatarDustCollectible.CollectionStoragePath, publicPath: FlovatarDustCollectible.CollectionPublicPath, publicCollection: Type<&FlovatarDustCollectible.Collection>(), publicLinkedType: Type<&FlovatarDustCollectible.Collection>(), createEmptyCollectionFunction: fun (): @{NonFungibleToken.Collection} {
+        return <-FlovatarDustCollectible.createEmptyCollection(nftType: Type<@Collection>())
+    })
             }
 
 
             return nil
         }
+
+access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection}{
+ return <-create Collection() 
+}
+
+
     }
 
 
     // Standard NFT collectionPublic interface that can also borrowFlovatar as the correct type
-    pub resource interface CollectionPublic {
-        pub fun deposit(token: @NonFungibleToken.NFT)
-        pub fun getIDs(): [UInt64]
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
-        pub fun borrowDustCollectible(id: UInt64): &FlovatarDustCollectible.NFT{FlovatarDustCollectible.Public, MetadataViews.Resolver}? {
+    access(all) resource interface CollectionPublic {
+        access(all) fun deposit(token: @{NonFungibleToken.NFT})
+        access(all) fun getIDs(): [UInt64]
+        access(all) view fun borrowNFT(_ id: UInt64): &{NonFungibleToken.NFT}?
+        access(all) fun borrowDustCollectible(id: UInt64): &FlovatarDustCollectible.NFT? {
             // If the result isn't nil, the id of the returned reference
             // should be the same as the argument to the function
             post {
@@ -487,17 +486,17 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
     }
 
     // Main Collection to manage all the Flovatar NFT
-    pub resource Collection: CollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection {
+    access(all) resource Collection: CollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.Collection, NonFungibleToken.CollectionPublic, ViewResolver.ResolverCollection {
         // dictionary of NFT conforming tokens
         // NFT is a resource type with an `UInt64` ID field
-        pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
+        access(all) var ownedNFTs: @{UInt64: {NonFungibleToken.NFT}}
 
         init () {
             self.ownedNFTs <- {}
         }
 
         // withdraw removes an NFT from the collection and moves it to the caller
-        pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
+        access(NonFungibleToken.Withdraw | NonFungibleToken.Owner) fun withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT}{
             let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("missing NFT")
 
             emit Withdraw(id: token.id, from: self.owner?.address)
@@ -507,7 +506,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
         // deposit takes a NFT and adds it to the collections dictionary
         // and adds the ID to the id array
-        pub fun deposit(token: @NonFungibleToken.NFT) {
+        access(all) fun deposit(token: @{NonFungibleToken.NFT}) {
             let token <- token as! @FlovatarDustCollectible.NFT
 
             let id: UInt64 = token.id
@@ -521,23 +520,23 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         }
 
         // getIDs returns an array of the IDs that are in the collection
-        pub fun getIDs(): [UInt64] {
+        access(all) view fun getIDs(): [UInt64]{
             return self.ownedNFTs.keys
         }
 
         // borrowNFT gets a reference to an NFT in the collection
         // so that the caller can read its metadata and call its methods
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
-            return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
+        access(all) view fun borrowNFT(_ id: UInt64): &{NonFungibleToken.NFT}?{
+            return (&self.ownedNFTs[id] as &{NonFungibleToken.NFT}?)!
         }
 
         // borrowFlovatar returns a borrowed reference to a Flovatar
         // so that the caller can read data and call methods from it.
-        pub fun borrowDustCollectible(id: UInt64): &FlovatarDustCollectible.NFT{FlovatarDustCollectible.Public, MetadataViews.Resolver}? {
+        access(all) fun borrowDustCollectible(id: UInt64): &FlovatarDustCollectible.NFT? {
             if self.ownedNFTs[id] != nil {
-                let ref = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+                let ref = (&self.ownedNFTs[id] as &{NonFungibleToken.NFT}?)!
                 let collectibleNFT = ref as! &FlovatarDustCollectible.NFT
-                return collectibleNFT as &FlovatarDustCollectible.NFT{FlovatarDustCollectible.Public, MetadataViews.Resolver}
+                return collectibleNFT as &FlovatarDustCollectible.NFT
             } else {
                 return nil
             }
@@ -545,47 +544,51 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
         // borrowFlovatarPrivate returns a borrowed reference to a Flovatar using the Private interface
         // so that the caller can read data and call methods from it, like setting the optional components.
-        pub fun borrowDustCollectiblePrivate(id: UInt64): &{FlovatarDustCollectible.Private}? {
+        access(all) fun borrowDustCollectiblePrivate(id: UInt64): &{FlovatarDustCollectible.Private}? {
             if self.ownedNFTs[id] != nil {
-                let ref = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+                let ref = (&self.ownedNFTs[id] as &{NonFungibleToken.NFT}?)!
                 return ref as! &FlovatarDustCollectible.NFT
             } else {
                 return nil
             }
         }
 
-        destroy() {
-            destroy self.ownedNFTs
-        }
+        
 
-        pub fun borrowViewResolver(id: UInt64): &AnyResource{MetadataViews.Resolver} {
+        access(all) view fun borrowViewResolver(id: UInt64): &{ViewResolver.Resolver}?{
             pre {
                 self.ownedNFTs[id] != nil : "NFT does not exist"
             }
-            let nft = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+            let nft = (&self.ownedNFTs[id] as &{NonFungibleToken.NFT}?)!
             let collectibleNFT = nft as! &FlovatarDustCollectible.NFT
-            return collectibleNFT as &AnyResource{MetadataViews.Resolver}
+            return collectibleNFT as &{ViewResolver.Resolver}?
         }
+
+access(all) fun createEmptyCollection(): @{NonFungibleToken.Collection}{
+ return <-create Collection() 
+}
+
+
     }
 
     // public function that anyone can call to create a new empty collection
-    pub fun createEmptyCollection(): @NonFungibleToken.Collection {
+    access(all) fun createEmptyCollection(nftType: Type): @{NonFungibleToken.Collection}{
         return <- create Collection()
     }
 
     // This struct is used to send a data representation of the Flovatar Dust Collectibles
     // when retrieved using the contract helper methods outside the collection.
-    pub struct FlovatarDustCollectibleData {
-        pub let id: UInt64
-        pub let mint: UInt64
-        pub let series: UInt64
-        pub let name: String
-        pub let svg: String?
-        pub let combination: String
-        pub let creatorAddress: Address
-        pub let layers: {UInt32: UInt64?}
-        pub let bio: {String: String}
-        pub let metadata: {String: String}
+    access(all) struct FlovatarDustCollectibleData {
+        access(all) let id: UInt64
+        access(all) let mint: UInt64
+        access(all) let series: UInt64
+        access(all) let name: String
+        access(all) let svg: String?
+        access(all) let combination: String
+        access(all) let creatorAddress: Address
+        access(all) let layers: {UInt32: UInt64?}
+        access(all) let bio: {String: String}
+        access(all) let metadata: {String: String}
         init(
             id: UInt64,
             mint: UInt64,
@@ -613,11 +616,11 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
 
     // This function will look for a specific Flovatar on a user account and return a FlovatarData if found
-    pub fun getCollectible(address: Address, collectibleId: UInt64) : FlovatarDustCollectibleData? {
+    access(all) fun getCollectible(address: Address, collectibleId: UInt64) : FlovatarDustCollectibleData? {
 
         let account = getAccount(address)
 
-        if let collectibleCollection = account.getCapability(self.CollectionPublicPath).borrow<&FlovatarDustCollectible.Collection{FlovatarDustCollectible.CollectionPublic}>()  {
+        if let collectibleCollection = account.capabilities.get(self.CollectionPublicPath)!.borrow<&FlovatarDustCollectible.Collection>()  {
             if let collectible = collectibleCollection.borrowDustCollectible(id: collectibleId) {
                 return FlovatarDustCollectibleData(
                     id: collectibleId,
@@ -637,12 +640,12 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
     }
 
     // This function will return all Flovatars on a user account and return an array of FlovatarData
-    pub fun getCollectibles(address: Address) : [FlovatarDustCollectibleData] {
+    access(all) fun getCollectibles(address: Address) : [FlovatarDustCollectibleData] {
 
         var dustCollectibleData: [FlovatarDustCollectibleData] = []
         let account = getAccount(address)
 
-        if let collectibleCollection = account.getCapability(self.CollectionPublicPath).borrow<&FlovatarDustCollectible.Collection{FlovatarDustCollectible.CollectionPublic}>()  {
+        if let collectibleCollection = account.capabilities.get(self.CollectionPublicPath)!.borrow<&FlovatarDustCollectible.Collection>()  {
             for id in collectibleCollection.getIDs() {
                 if let collectible = collectibleCollection.borrowDustCollectible(id: id) {
                     dustCollectibleData.append(FlovatarDustCollectibleData(
@@ -665,11 +668,11 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
 
     // This returns all the previously minted combinations, so that duplicates won't be allowed
-    pub fun getMintedCombinations() : [String] {
+    access(all) fun getMintedCombinations() : [String] {
         return FlovatarDustCollectible.mintedCombinations.keys
     }
     // This returns all the previously minted names, so that duplicates won't be allowed
-    pub fun getMintedNames() : [String] {
+    access(all) fun getMintedNames() : [String] {
         return FlovatarDustCollectible.mintedNames.keys
     }
 
@@ -682,7 +685,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         FlovatarDustCollectible.mintedNames.insert(key: name, true)
     }
 
-    pub fun getCoreLayers(series: UInt64, layers: {UInt32: UInt64?}): {UInt32: UInt64}{
+    access(all) fun getCoreLayers(series: UInt64, layers: {UInt32: UInt64?}): {UInt32: UInt64}{
         let coreLayers: {UInt32: UInt64} = {}
         for k in layers.keys {
             if(!FlovatarDustCollectibleTemplate.isCollectibleLayerAccessory(layer: k, series: series)){
@@ -704,7 +707,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
     // This helper function will generate a string from a list of components,
     // to be used as a sort of barcode to keep the inventory of the minted
     // Flovatars and to avoid duplicates
-    pub fun getCombinationString(
+    access(all) fun getCombinationString(
         series: UInt64,
         layers: {UInt32: UInt64}
     ) : String {
@@ -730,7 +733,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
     // This function will get a list of component IDs and will check if the
     // generated string is unique or if someone already used it before.
-    pub fun checkCombinationAvailable(
+    access(all) fun checkCombinationAvailable(
         series: UInt64,
         layers: {UInt32: UInt64}
     ) : Bool {
@@ -743,7 +746,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
     // This will check if a specific Name has already been taken
     // and assigned to some Flovatar
-    pub fun checkNameAvailable(name: String) : Bool {
+    access(all) fun checkNameAvailable(name: String) : Bool {
         return name.length > 2 && name.length < 20 && ! FlovatarDustCollectible.mintedNames.containsKey(name)
     }
 
@@ -755,12 +758,12 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
     // The Spark NFT will entitle to use any common basic component (body, hair, etc.)
     // In order to use special rare components a boost of the same rarity will be needed
     // for each component used
-    pub fun createDustCollectible(
+    access(all) fun createDustCollectible(
         series: UInt64,
         layers: [UInt32],
         templateIds: [UInt64?],
         address: Address,
-        vault: @FungibleToken.Vault
+        vault: @{FungibleToken.Vault}
     ) : @FlovatarDustCollectible.NFT {
         pre {
             vault.isInstance(Type<@FlovatarDustToken.Vault>()) : "Vault not of the right Token Type"
@@ -847,13 +850,13 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
         let creatorAccount = getAccount(address)
         royalties.append(Royalty(
-            wallet: creatorAccount.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver),
+            wallet: creatorAccount.capabilities.get<&FlowToken.Vault>(/public/flowTokenReceiver)!,
             cut: FlovatarDustCollectible.getRoyaltyCut(),
             type: RoyaltyType.percentage
         ))
 
         royalties.append(Royalty(
-            wallet: self.account.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver),
+            wallet: self.account.capabilities.get<&FlowToken.Vault>(/public/flowTokenReceiver)!,
             cut: FlovatarDustCollectible.getMarketplaceCut(),
             type: RoyaltyType.percentage
         ))
@@ -877,10 +880,10 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
     // These functions will return the current Royalty cuts for
     // both the Creator and the Marketplace.
-    pub fun getRoyaltyCut(): UFix64{
+    access(all) fun getRoyaltyCut(): UFix64{
         return self.royaltyCut
     }
-    pub fun getMarketplaceCut(): UFix64{
+    access(all) fun getMarketplaceCut(): UFix64{
         return self.marketplaceCut
     }
     // Only Admins will be able to call the set functions to
@@ -897,11 +900,11 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
 
     // This is the main Admin resource that will allow the owner
     // to generate new Templates, Components and Packs
-    pub resource Admin {
+    access(all) resource Admin {
 
         //This will create a new Flovatar Collectible Series that
         // contains all the basic informations about a new Series of NFT
-        pub fun createCollectibleSeries(
+        access(all) fun createCollectibleSeries(
                         name: String,
                         description: String,
                         svgPrefix: String,
@@ -928,7 +931,7 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         // contains all the SVG and basic informations to represent
         // a specific part of the Collectible (body, hair, eyes, mouth, etc.)
         // More info in the FlovatarDustCollectibleTemplate.cdc file
-        pub fun createCollectibleTemplate(
+        access(all) fun createCollectibleTemplate(
                         name: String,
                         description: String,
                         series: UInt64,
@@ -953,28 +956,28 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         }
 
         //This will mint a new Component based from a selected Template
-        pub fun createCollectible(templateId: UInt64) : @FlovatarDustCollectibleAccessory.NFT {
+        access(all) fun createCollectible(templateId: UInt64) : @FlovatarDustCollectibleAccessory.NFT {
             return <- FlovatarDustCollectibleAccessory.createCollectibleAccessoryInternal(templateId: templateId)
         }
         //This will mint Components in batch and return a Collection instead of the single NFT
-        pub fun batchCreateCollectibles(templateId: UInt64, quantity: UInt64) : @FlovatarDustCollectibleAccessory.Collection {
+        access(all) fun batchCreateCollectibles(templateId: UInt64, quantity: UInt64) : @FlovatarDustCollectibleAccessory.Collection {
             return <- FlovatarDustCollectibleAccessory.batchCreateCollectibleAccessory(templateId: templateId, quantity: quantity)
         }
 
 
         // With this function you can generate a new Admin resource
         // and pass it to another user if needed
-        pub fun createNewAdmin(): @Admin {
+        access(all) fun createNewAdmin(): @Admin {
             return <-create Admin()
         }
 
         // Helper functions to update the Royalty cut
-        pub fun setRoyaltyCut(value: UFix64) {
+        access(all) fun setRoyaltyCut(value: UFix64) {
             FlovatarDustCollectible.setRoyaltyCut(value: value)
         }
 
         // Helper functions to update the Marketplace cut
-        pub fun setMarketplaceCut(value: UFix64) {
+        access(all) fun setMarketplaceCut(value: UFix64) {
             FlovatarDustCollectible.setMarketplaceCut(value: value)
         }
     }
@@ -997,11 +1000,13 @@ pub contract FlovatarDustCollectible: NonFungibleToken {
         self.royaltyCut = 0.01
         self.marketplaceCut = 0.05
 
-        self.account.save<@NonFungibleToken.Collection>(<- FlovatarDustCollectible.createEmptyCollection(), to: FlovatarDustCollectible.CollectionStoragePath)
-        self.account.link<&{FlovatarDustCollectible.CollectionPublic}>(FlovatarDustCollectible.CollectionPublicPath, target: FlovatarDustCollectible.CollectionStoragePath)
+        self.account.storage.save<@{NonFungibleToken.Collection}>(<- FlovatarDustCollectible.createEmptyCollection(nftType: Type<@Collection>()), to: FlovatarDustCollectible.CollectionStoragePath)
+        var _capForLinked1 = self.account.capabilities.storage.issue<&{FlovatarDustCollectible.CollectionPublic}>( FlovatarDustCollectible.CollectionStoragePath)
+self.account.capabilities.publish(_capForLinked1 , at:FlovatarDustCollectible.CollectionPublicPath)
+
 
         // Put the Admin resource in storage
-        self.account.save<@Admin>(<- create Admin(), to: self.AdminStoragePath)
+        self.account.storage.save<@Admin>(<- create Admin(), to: self.AdminStoragePath)
 
         emit ContractInitialized()
 	}
