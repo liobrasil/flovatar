@@ -1,16 +1,7 @@
-//import FungibleToken from "../0xf233dcee88fe0abe/FungibleToken.cdc"
-//import NonFungibleToken from "../0x1d7e57aa55817448/NonFungibleToken.cdc"
-//import FlowToken from "../0x1654653399040a61/FlowToken.cdc"
-//import Flovatar from "./Flovatar.cdc"
-//import FlovatarComponent from "./FlovatarComponent.cdc"
-import FungibleToken from "./../../standardsV1/FungibleToken.cdc"
-
-import NonFungibleToken from "./../../standardsV1/NonFungibleToken.cdc"
-
-import FlowToken from "./../../standardsV1/FlowToken.cdc"
-
+import FungibleToken from "./FungibleToken.cdc"
+import NonFungibleToken from "./NonFungibleToken.cdc"
+import FlowToken from "./FlowToken.cdc"
 import Flovatar from "./Flovatar.cdc"
-
 import FlovatarComponent from "./FlovatarComponent.cdc"
 
 /*

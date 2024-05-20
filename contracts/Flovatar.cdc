@@ -1,19 +1,10 @@
-import FungibleToken from "./../../standardsV1/FungibleToken.cdc"
-
-import ViewResolver from "../../standardsV1/ViewResolver.cdc"
-
-import NonFungibleToken from "./../../standardsV1/NonFungibleToken.cdc"
-
-import FlowToken from "./../../standardsV1/FlowToken.cdc"
-
+import FungibleToken from "./FungibleToken.cdc"
+import NonFungibleToken from "./NonFungibleToken.cdc"
+import FlowToken from "./FlowToken.cdc"
 import FlovatarComponentTemplate from "./FlovatarComponentTemplate.cdc"
-
 import FlovatarComponent from "./FlovatarComponent.cdc"
-
 import FlovatarPack from "./FlovatarPack.cdc"
-
-import MetadataViews from "./../../standardsV1/MetadataViews.cdc"
-
+import MetadataViews from "./MetadataViews.cdc"
 import FlovatarDustToken from "./FlovatarDustToken.cdc"
 
 /*

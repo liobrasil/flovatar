@@ -1,7 +1,5 @@
-import FungibleToken from "./../../standardsV1/FungibleToken.cdc"
-
-import Toucans from "../0x577a3c409c5dcb5e/Toucans.cdc"
-
+import FungibleToken from "./FungibleToken.cdc"
+import Toucans from "./toucans/Toucans.cdc"
 import FlovatarDustToken from "./FlovatarDustToken.cdc"
 
 access(all)
