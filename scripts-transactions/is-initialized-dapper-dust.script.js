@@ -16,7 +16,7 @@ import MetadataViews from 0xMetadataViews
 import FlowUtilityToken from 0xDuc
 import NFTStorefrontV2 from 0xStorefront2
 
-pub fun main(address: Address): Bool {
+access(all)fun main(address: Address): Bool {
 
   let account = getAccount(address)
 

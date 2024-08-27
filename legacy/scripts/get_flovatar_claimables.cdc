@@ -8,7 +8,7 @@ import FlovatarPack from "../contracts/FlovatarPack.cdc"
 import FlovatarMarketplace from "../contracts/FlovatarMarketplace.cdc"
 import FlovatarInbox from "../../contracts/FlovatarInbox.cdc"
 
-pub struct Claimables {
+access(all)struct Claimables {
 
   pub(set) var id: UInt64
   pub(set) var components: [UInt64]
@@ -22,7 +22,7 @@ pub struct Claimables {
   }
 }
 
-pub fun main(id: UInt64, address: Address) : Claimables {
+access(all)fun main(id: UInt64, address: Address) : Claimables {
     let status = Claimables(id)
     let account = getAccount(address)
 

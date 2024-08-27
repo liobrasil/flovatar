@@ -13,7 +13,7 @@ import NonFungibleToken from 0xNonFungible
 import FungibleToken from 0xFungible
 import FlowToken from 0xFlowToken
 
-pub struct Collections {
+access(all)struct Collections {
 
   pub(set) var address: Address
   pub(set) var flovatars: [Flovatar.FlovatarData]
@@ -33,7 +33,7 @@ pub struct Collections {
   }
 }
 
-pub fun main(address:Address) : Collections {
+access(all)fun main(address:Address) : Collections {
     // get the accounts' public address objects
     let account = getAccount(address)
     let status = Collections(address)

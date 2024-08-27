@@ -11,7 +11,7 @@ import FlovatarMarketplace from "../contracts/FlovatarMarketplace.cdc"
 
 // This script returns a specific Component Template
 
-pub fun main(id: UInt64) : FlovatarComponentTemplate.ComponentTemplateData? {
+access(all)fun main(id: UInt64) : FlovatarComponentTemplate.ComponentTemplateData? {
 
     return FlovatarComponentTemplate.getComponentTemplate(id: id)
 

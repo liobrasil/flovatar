@@ -13,7 +13,7 @@ import FungibleToken from 0xFungible
 import FlowToken from 0xFlowToken
 import HybridCustody from 0xHybridCustody
 
-pub struct Claimables {
+access(all)struct Claimables {
 
   pub(set) var address: Address
   pub(set) var ownerAddress: Address?
@@ -41,7 +41,7 @@ pub struct Claimables {
   }
 }
 
-pub fun main(address:Address) : Claimables {
+access(all)fun main(address:Address) : Claimables {
     // get the accounts' public address objects
     let status = Claimables(address)
     let account = getAccount(address)

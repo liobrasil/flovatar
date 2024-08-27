@@ -8,7 +8,7 @@ import FlovatarPack from "../contracts/FlovatarPack.cdc"
 import FlovatarMarketplace from "../contracts/FlovatarMarketplace.cdc"
 import FlovatarInbox from "../../contracts/FlovatarInbox.cdc"
 
-pub struct Claimables {
+access(all)struct Claimables {
 
   pub(set) var address: Address
   pub(set) var components: [UInt64]
@@ -20,7 +20,7 @@ pub struct Claimables {
   }
 }
 
-pub fun main(address:Address) : Claimables {
+access(all)fun main(address:Address) : Claimables {
     // get the accounts' public address objects
     let status = Claimables(address)
     let account = getAccount(address)

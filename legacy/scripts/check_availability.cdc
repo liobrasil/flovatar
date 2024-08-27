@@ -8,7 +8,7 @@ import FlovatarPack from "../contracts/FlovatarPack.cdc"
 import FlovatarMarketplace from "../contracts/FlovatarMarketplace.cdc"
 
 
-pub fun main(
+access(all)fun main(
     name: String,
     body: UInt64,
     hair: UInt64,

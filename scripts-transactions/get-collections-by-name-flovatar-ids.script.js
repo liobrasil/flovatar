@@ -13,7 +13,7 @@ import FungibleToken from 0xFungible
 import FlowToken from 0xFlowToken
 import FIND from 0xFind
 
-pub struct Collections {
+access(all)struct Collections {
 
   pub(set) var address: Address
   pub(set) var flovatars: [Flovatar.FlovatarData]
@@ -33,7 +33,7 @@ pub struct Collections {
   }
 }
 
-pub fun main(name: String) :Collections? {
+access(all)fun main(name: String) :Collections? {
 
     let address = FIND.lookupAddress(name)
 

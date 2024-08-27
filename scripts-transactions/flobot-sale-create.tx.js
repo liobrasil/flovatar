@@ -13,7 +13,7 @@ import NFTStorefrontV2 from 0xStorefront2
 import MetadataViews from 0xMetadataViews
 import Flovatar, FlovatarComponent, Flobot, FlovatarComponentTemplate, FlovatarPack, FlovatarMarketplace, FlovatarDustToken, FlovatarDustCollectible, FlovatarDustCollectibleAccessory, FlovatarDustCollectibleTemplate from 0xFlovatar
 
-pub fun getOrCreateStorefront(account: AuthAccount): &NFTStorefrontV2.Storefront {
+access(all)fun getOrCreateStorefront(account: AuthAccount): &NFTStorefrontV2.Storefront {
     if let storefrontRef = account.borrow<&NFTStorefrontV2.Storefront>(from: NFTStorefrontV2.StorefrontStoragePath) {
         return storefrontRef
     }

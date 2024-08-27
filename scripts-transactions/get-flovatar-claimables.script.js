@@ -12,7 +12,7 @@ import NonFungibleToken from 0xNonFungible
 import FungibleToken from 0xFungible
 import FlowToken from 0xFlowToken
 
-pub struct Claimables {
+access(all)struct Claimables {
 
   pub(set) var address: Address
   pub(set) var flovatarComponents: [UInt64]
@@ -30,7 +30,7 @@ pub struct Claimables {
   }
 }
 
-pub fun main(address:Address, id: UInt64) : Claimables {
+access(all)fun main(address:Address, id: UInt64) : Claimables {
     // get the accounts' public address objects
     let status = Claimables(address)
     let account = getAccount(address)

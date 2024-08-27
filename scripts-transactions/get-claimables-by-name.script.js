@@ -14,7 +14,7 @@ import FlowToken from 0xFlowToken
 import FIND from 0xFind
 import HybridCustody from 0xHybridCustody
 
-pub struct Claimables {
+access(all)struct Claimables {
 
   pub(set) var address: Address
   pub(set) var ownerAddress: Address?
@@ -42,7 +42,7 @@ pub struct Claimables {
   }
 }
 
-pub fun main(name: String) : Claimables {
+access(all)fun main(name: String) : Claimables {
 
     let address = FIND.lookupAddress(name)!
     // get the accounts' public address objects

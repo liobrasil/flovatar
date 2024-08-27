@@ -15,7 +15,7 @@ import FlowUtilityToken from 0xDuc
 import FlovatarDustToken from 0xFlovatar
 
 
-pub struct AddressStatus {
+access(all)struct AddressStatus {
 
   pub(set) var address: Address
   pub(set) var name: String?
@@ -31,7 +31,7 @@ pub struct AddressStatus {
 
 // This script checks that the accounts are set up correctly for the marketplace tutorial.
 
-pub fun main(address:Address) : AddressStatus {
+access(all)fun main(address:Address) : AddressStatus {
     // get the accounts' public address objects
     let account = getAccount(address)
     let status = AddressStatus(address)

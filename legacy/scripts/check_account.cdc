@@ -9,7 +9,7 @@ import FlovatarMarketplace from "../contracts/FlovatarMarketplace.cdc"
 import MetadataViews from "../contracts/MetadataViews.cdc"
 
 
-pub fun main(address: Address): Bool {
+access(all)fun main(address: Address): Bool {
 
   let account = getAccount(address)
 

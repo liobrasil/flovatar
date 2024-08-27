@@ -1,6 +1,6 @@
 import Crypto
 
-pub fun main(
+access(all)fun main(
   address: Address,
   message: String,
   signature: String
