@@ -1,19 +1,18 @@
 
-import FungibleToken from 0xFungible
-import FlowToken from 0xFlowToken
-import FIND from 0xFind
-import Profile from 0xFindProfile
-import FlowUtilityToken from 0xDuc
-import FlovatarDustToken from 0xFlovatar
+import "FungibleToken"
+import "FlowToken"
+import "FIND"
+import "Profile"
+import "FlovatarDustToken"
 
 
-access(all)struct AddressStatus {
+access(all) struct AddressStatus {
 
-  pub(set) var address: Address
-  pub(set) var name: String?
-  pub(set) var balance: UFix64
-  pub(set) var dustBalance: UFix64
-  init (_ address:Address) {
+  access(all) var address: Address
+  access(all) var name: String?
+  access(all) var balance: UFix64
+  access(all) var dustBalance: UFix64
+  init (_ address:Address,_ name: String?, _ balance: UFix64, _ dustBalance: UFix64) {
     self.address = address
     self.balance = 0.0
     self.dustBalance = 0.0
@@ -23,19 +22,21 @@ access(all)struct AddressStatus {
 
 // This script checks that the accounts are set up correctly for the marketplace tutorial.
 
-access(all)fun main(address:Address) : AddressStatus {
+access(all) fun main(address:Address) : AddressStatus {
     // get the accounts' public address objects
     let account = getAccount(address)
-    let status = AddressStatus(address)
+    var balance = 0.0
+    var name: String? = nil
+    var dustBalance = 0.0
 
-    if let vault = account.getCapability(/public/flowTokenBalance).borrow<&FlowToken.Vault{FungibleToken.Balance}>() {
-       status.balance = vault.balance
+    if let vault = account.capabilities.borrow<&FlowToken.Vault>(/public/flowTokenBalance){
+       balance = vault.balance
     }
-    if let dustVault = account.getCapability(FlovatarDustToken.VaultBalancePath).borrow<&FlovatarDustToken.Vault{FungibleToken.Balance}>() {
-       status.dustBalance = dustVault.balance
+    if let dustVault = account.capabilities.borrow<&FlovatarDustToken.Vault>(FlovatarDustToken.VaultBalancePath) {
+       dustBalance = dustVault.balance
     }
 
-    let leaseCap = account.getCapability<&FIND.LeaseCollection{FIND.LeaseCollectionPublic}>(FIND.LeasePublicPath)
+    let leaseCap = account.capabilities.get<&FIND.LeaseCollection>(FIND.LeasePublicPath)
 
     //we do have leases
     if leaseCap.check() {
@@ -64,14 +65,14 @@ access(all)fun main(address:Address) : AddressStatus {
         }
 
         if(profileName != nil){
-            status.name = profileName
+            name = profileName
         } else if(name != nil) {
-            status.name = name
+            name = name
         }
 
     }
 
 
-    return status
+    return AddressStatus(address, name, balance, dustBalance)
 
 }

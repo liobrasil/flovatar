@@ -11,7 +11,7 @@ transaction(
 
     prepare(account: auth(Storage, Capabilities) &Account) {
 
-        let marketplaceCap = account.capabilities.get<&{FlovatarMarketplace.SalePublic}>(FlovatarMarketplace.CollectionPublicPath)
+        let marketplaceCap = account.capabilities.get<&FlovatarMarketplace.SaleCollection>(FlovatarMarketplace.CollectionPublicPath)
         // if sale collection is not created yet we make it.
         if !marketplaceCap.check() {
              let wallet =  account.capabilities.get<&FlowToken.Vault>(/public/flowTokenReceiver)
@@ -23,7 +23,7 @@ transaction(
             // publish a capability to the Collection in storage
             account.capabilities.unpublish(FlovatarMarketplace.CollectionPublicPath)
             account.capabilities.publish(
-                account.capabilities.storage.issue<&{FlovatarMarketplace.SalePublic}>(FlovatarComponent.CollectionStoragePath),
+                account.capabilities.storage.issue<&FlovatarMarketplace.SaleCollection>(FlovatarComponent.CollectionStoragePath),
                 at: FlovatarMarketplace.CollectionPublicPath
             )
         }

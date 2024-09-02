@@ -1,7 +1,7 @@
 
 transaction(message: String) {
 
-    prepare(account: AuthAccount) {
+    prepare(account: &Account) {
 
     }
 

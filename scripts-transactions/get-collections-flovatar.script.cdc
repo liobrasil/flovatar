@@ -1,18 +1,17 @@
 
-import Flovatar, FlovatarComponent, FlovatarComponentTemplate, FlovatarPack, FlovatarMarketplace from 0xFlovatar
-import NonFungibleToken from 0xNonFungible
-import FungibleToken from 0xFungible
-import FlowToken from 0xFlowToken
+import "Flovatar"
+import "FlovatarComponent"
+import "FlovatarMarketplace"
 
-access(all)struct Collections {
+access(all) struct Collections {
 
-  pub(set) var address: Address
-  pub(set) var flovatars: [Flovatar.FlovatarData]
-  pub(set) var components: [FlovatarComponent.ComponentData]
-  pub(set) var flovatarSales: [FlovatarMarketplace.FlovatarSaleData]
-  pub(set) var componentSales: [FlovatarMarketplace.FlovatarComponentSaleData]
-  pub(set) var packs: [UInt64]
-  init (_ address:Address) {
+  access(all) var address: Address
+  access(all) var flovatars: [Flovatar.FlovatarData]
+  access(all) var components: [FlovatarComponent.ComponentData]
+  access(all) var flovatarSales: [FlovatarMarketplace.FlovatarSaleData]
+  access(all) var componentSales: [FlovatarMarketplace.FlovatarComponentSaleData]
+  access(all) var packs: [UInt64]
+  init (_ address:Address, _ flovatars: [Flovatar.FlovatarData]){
     self.address = address
     self.flovatars = []
     self.components = []
@@ -22,12 +21,7 @@ access(all)struct Collections {
   }
 }
 
-access(all)fun main(address:Address) : Collections {
-    // get the accounts' public address objects
-    let account = getAccount(address)
-    let status = Collections(address)
-
-    status.flovatars = Flovatar.getFlovatars(address: address)
-
-    return status
+access(all) fun main(address:Address) : Collections {
+    let flovatars = Flovatar.getFlovatars(address: address)
+    return Collections(address, flovatars)
 }

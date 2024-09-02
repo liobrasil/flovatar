@@ -26,7 +26,7 @@ transaction(
 
     prepare(account: auth(Storage, Capabilities) &Account) {
 
-        let flobotCap = account.capabilities.get<&{Flobot.CollectionPublic}>(Flobot.CollectionPublicPath)
+        let flobotCap = account.capabilities.get<&Flobot.Collection>(Flobot.CollectionPublicPath)
         if(!flobotCap.check()) {
             account.storage.save<@{NonFungibleToken.Collection}>(<- Flobot.createEmptyCollection(nftType: Type<@Flobot.NFT>()), to: Flobot.CollectionStoragePath)
             account.capabilities.unpublish(Flobot.CollectionPublicPath)

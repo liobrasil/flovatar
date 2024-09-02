@@ -1,14 +1,11 @@
-import Flovatar, FlovatarComponent, FlovatarComponentTemplate, FlovatarPack, FlovatarMarketplace from 0xFlovatar
-import FungibleToken from 0xFungible
-import NonFungibleToken from 0xNonFungible
-import FlowToken from 0xFlowToken
+import "FlovatarPack"
 
 transaction(packId: UInt64) {
 
-    let flovatarPackCollection: &FlovatarPack.Collection
+    let flovatarPackCollection: auth(FlovatarPack.WithdrawEnt) &FlovatarPack.Collection
 
-    prepare(account: AuthAccount) {
-        self.flovatarPackCollection = account.borrow<&FlovatarPack.Collection>(from: FlovatarPack.CollectionStoragePath)!
+    prepare(account: auth(Storage) &Account) {
+        self.flovatarPackCollection = account.storage.borrow<auth(FlovatarPack.WithdrawEnt) &FlovatarPack.Collection>(from: FlovatarPack.CollectionStoragePath)!
     }
 
     execute {

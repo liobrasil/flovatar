@@ -18,7 +18,7 @@ transaction(saleAddress: Address, tokenId: UInt64, amount: UFix64) {
     prepare(account: auth(Storage, Capabilities) &Account) {
 
         // get the references to the buyer's Vault and NFT Collection receiver
-        var collectionCap = account.capabilities.get<&{Flovatar.CollectionPublic}>(Flovatar.CollectionPublicPath)
+        var collectionCap = account.capabilities.get<&Flovatar.Collection>(Flovatar.CollectionPublicPath)
 
         // if collection is not created yet we make it.
         if(!collectionCap.check()) {

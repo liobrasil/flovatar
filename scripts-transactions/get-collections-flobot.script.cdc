@@ -1,25 +1,18 @@
 
-import Flobot, Flovatar, FlovatarComponent, FlovatarComponentTemplate, FlovatarPack, FlovatarMarketplace from 0xFlovatar
-import NonFungibleToken from 0xNonFungible
-import FungibleToken from 0xFungible
-import FlowToken from 0xFlowToken
+import "Flobot"
 
-access(all)struct Collections {
+access(all) struct Collections {
 
-  pub(set) var address: Address
-  pub(set) var flobots: [Flobot.FlobotData]
-  init (_ address:Address) {
+  access(all) var address: Address
+  access(all) var flobots: [Flobot.FlobotData]
+  init (_ address:Address, _ flobots: [Flobot.FlobotData]) {
     self.address = address
     self.flobots = []
   }
 }
 
-access(all)fun main(address:Address) : Collections {
-    // get the accounts' public address objects
-    let account = getAccount(address)
-    let status = Collections(address)
+access(all) fun main(address:Address) : Collections {
+    let flobots = Flobot.getFlobots(address: address)
 
-    status.flobots = Flobot.getFlobots(address: address)
-
-    return status
+    return Collections(address, flobots)
 }
