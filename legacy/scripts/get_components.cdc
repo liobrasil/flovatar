@@ -11,7 +11,7 @@ import FlovatarMarketplace from "../contracts/FlovatarMarketplace.cdc"
 
 // This script returns the available components
 
-access(all)fun main(address:Address) : [FlovatarComponent.ComponentData] {
+pub fun main(address:Address) : [FlovatarComponent.ComponentData] {
 
     return FlovatarComponent.getComponents(address: address)
 

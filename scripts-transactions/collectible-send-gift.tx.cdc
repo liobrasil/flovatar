@@ -1,20 +1,19 @@
-import FungibleToken from 0xFungible
-import NonFungibleToken from 0xNonFungible
-import Flovatar, FlovatarComponent, FlovatarDustToken, FlovatarDustCollectible, FlovatarDustCollectibleAccessory, FlovatarDustCollectibleTemplate from 0xFlovatar
+import "FlovatarDustCollectible"
+import "NonFungibleToken"
 
 transaction(
     collectibleId: UInt64,
     address: Address) {
 
-    let collectibleCollection: &FlovatarDustCollectible.Collection
+    let collectibleCollection: auth(NonFungibleToken.Withdraw) &FlovatarDustCollectible.Collection
     let collectibleReceiverCollection: Capability<&{FlovatarDustCollectible.CollectionPublic}>
 
-    prepare(account: AuthAccount) {
-        self.collectibleCollection = account.borrow<&FlovatarDustCollectible.Collection>(from: FlovatarDustCollectible.CollectionStoragePath)!
+    prepare(account: auth(Storage) &Account) {
+        self.collectibleCollection = account.storage.borrow<auth(NonFungibleToken.Withdraw) &FlovatarDustCollectible.Collection>(from: FlovatarDustCollectible.CollectionStoragePath)!
 
 
         let receiverAccount = getAccount(address)
-        self.collectibleReceiverCollection = receiverAccount.getCapability<&{FlovatarDustCollectible.CollectionPublic}>(FlovatarDustCollectible.CollectionPublicPath)
+        self.collectibleReceiverCollection = receiverAccount.capabilities.get<&{FlovatarDustCollectible.CollectionPublic}>(FlovatarDustCollectible.CollectionPublicPath)
     }
 
     execute {

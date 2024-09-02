@@ -10,7 +10,7 @@ import FlovatarMarketplace from "../contracts/FlovatarMarketplace.cdc"
 
 // This script returns the available websites
 
-access(all)fun main(address:Address, id: UInt64) : FlovatarMarketplace.FlovatarComponentSaleData? {
+pub fun main(address:Address, id: UInt64) : FlovatarMarketplace.FlovatarComponentSaleData? {
 
     return FlovatarMarketplace.getFlovatarComponentSale(address: address, id: id)
 

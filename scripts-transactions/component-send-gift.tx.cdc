@@ -1,20 +1,18 @@
-import FungibleToken from 0xFungible
-import NonFungibleToken from 0xNonFungible
-import Flovatar, FlovatarComponent from 0xFlovatar
+import "FlovatarComponent"
+import "NonFungibleToken"
 
 transaction(
     componentId: UInt64,
     address: Address) {
 
-    let flovatarComponentCollection: &FlovatarComponent.Collection
+    let flovatarComponentCollection: auth(NonFungibleToken.Withdraw) &FlovatarComponent.Collection
     let flovatarComponentReceiverCollection: Capability<&{FlovatarComponent.CollectionPublic}>
 
-    prepare(account: AuthAccount) {
-        self.flovatarComponentCollection = account.borrow<&FlovatarComponent.Collection>(from: FlovatarComponent.CollectionStoragePath)!
-
+    prepare(account: auth(Storage) &Account) {
+        self.flovatarComponentCollection = account.storage.borrow<auth(NonFungibleToken.Withdraw) &FlovatarComponent.Collection>(from: FlovatarComponent.CollectionStoragePath)!
 
         let receiverAccount = getAccount(address)
-        self.flovatarComponentReceiverCollection = receiverAccount.getCapability<&{FlovatarComponent.CollectionPublic}>(FlovatarComponent.CollectionPublicPath)
+        self.flovatarComponentReceiverCollection = receiverAccount.capabilities.get<&{FlovatarComponent.CollectionPublic}>(FlovatarComponent.CollectionPublicPath)
     }
 
     execute {

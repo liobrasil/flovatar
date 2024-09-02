@@ -1,7 +1,5 @@
-import Flovatar, Flobot, FlovatarComponent, FlovatarComponentTemplate, FlovatarPack, FlovatarMarketplace from 0xFlovatar
-import NonFungibleToken from 0xNonFungible
-import FungibleToken from 0xFungible
-import FlowToken from 0xFlowToken
+import "Flobot"
+import "FlovatarComponent"
 
 //this transaction will remove the Background from an existing Flobot
 transaction(
@@ -12,15 +10,15 @@ transaction(
     let flovatarComponentCollection: &FlovatarComponent.Collection
 
 
-    prepare(account: AuthAccount) {
-        self.flobotCollection = account.borrow<&Flobot.Collection>(from: Flobot.CollectionStoragePath)!
+    prepare(account: auth(Storage) &Account) {
+        self.flobotCollection = account.storage.borrow<&Flobot.Collection>(from: Flobot.CollectionStoragePath)!
 
-        self.flovatarComponentCollection = account.borrow<&FlovatarComponent.Collection>(from: FlovatarComponent.CollectionStoragePath)!
+        self.flovatarComponentCollection = account.storage.borrow<&FlovatarComponent.Collection>(from: FlovatarComponent.CollectionStoragePath)!
     }
 
     execute {
 
-        let flobot: &{Flobot.Private} = self.flobotCollection.borrowFlobotPrivate(id: flobotId)!
+        let flobot = self.flobotCollection.borrowFlobot(id: flobotId)! as! auth(Flobot.PrivateEnt) &Flobot.NFT
 
         let background <-flobot.removeBackground()
         if(background != nil){

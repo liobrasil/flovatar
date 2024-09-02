@@ -1,9 +1,6 @@
-import Flovatar, FlovatarComponent, FlovatarComponentTemplate, FlovatarPack, FlovatarMarketplace, FlovatarDustCollectible, FlovatarDustCollectibleAccessory, FlovatarDustCollectibleTemplate from 0xFlovatar
-import NonFungibleToken from 0xNonFungible
-import FungibleToken from 0xFungible
-import FlowToken from 0xFlowToken
+import "FlovatarDustCollectible"
 
-access(all)fun main(
+access(all) fun main(
     series: UInt64,
     layersId: [UInt32],
     layersValue: [UInt64]) : Bool {

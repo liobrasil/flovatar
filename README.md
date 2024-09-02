@@ -20,7 +20,7 @@ You can use code in [get_flovatars.cdc](/scripts/get_flovatars.cdc) file to get 
 /// Fetch a List of Flovatars on address - Mainnet
 import Flovatar from 0x921ea449dffec68a
 
-access(all)fun main(address:Address) : [Flovatar.FlovatarData] {
+access(all) fun main(address:Address) : [Flovatar.FlovatarData] {
   return Flovatar.getFlovatars(address: address)
 }
 ```
@@ -35,7 +35,7 @@ config().put("accessNode.api", "https://rest-mainnet.onflow.org");
     const cadence = `
       import Flovatar from 0x921ea449dffec68a
 
-      access(all)fun main(address:Address) : [Flovatar.FlovatarData] {
+      access(all) fun main(address:Address) : [Flovatar.FlovatarData] {
         return Flovatar.getFlovatars(address: address)
       }
     `;

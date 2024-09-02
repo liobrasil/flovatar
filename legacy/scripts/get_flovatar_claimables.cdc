@@ -22,7 +22,7 @@ access(all)struct Claimables {
   }
 }
 
-access(all)fun main(id: UInt64, address: Address) : Claimables {
+pub fun main(id: UInt64, address: Address) : Claimables {
     let status = Claimables(id)
     let account = getAccount(address)
 

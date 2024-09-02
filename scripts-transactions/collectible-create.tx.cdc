@@ -1,7 +1,6 @@
-import Flovatar, FlovatarComponent, FlovatarComponentTemplate, FlovatarPack, FlovatarMarketplace, FlovatarDustToken, FlovatarDustCollectible, FlovatarDustCollectibleAccessory, FlovatarDustCollectibleTemplate from 0xFlovatar
-import NonFungibleToken from 0xNonFungible
-import FungibleToken from 0xFungible
-import FlowToken from 0xFlowToken
+import "FlovatarDustToken"
+import "FlovatarDustCollectible"
+import "FungibleToken"
 
 //this transaction will create a new Webshot and create and auction for it
 transaction(
@@ -12,16 +11,16 @@ transaction(
     ){
 
     let flovatarCollectibleCollection: &FlovatarDustCollectible.Collection
-    let temporaryVault: @FungibleToken.Vault
+    let temporaryVault: @{FungibleToken.Vault}
 
     let accountAddress: Address
 
-    prepare(account: AuthAccount) {
-        self.flovatarCollectibleCollection = account.borrow<&FlovatarDustCollectible.Collection>(from: FlovatarDustCollectible.CollectionStoragePath)!
+    prepare(account: auth(Storage) &Account) {
+        self.flovatarCollectibleCollection = account.storage.borrow<&FlovatarDustCollectible.Collection>(from: FlovatarDustCollectible.CollectionStoragePath)!
         self.accountAddress = account.address
 
 
-        let vaultRef = account.borrow<&{FungibleToken.Provider}>(from: FlovatarDustToken.VaultStoragePath) ?? panic("Could not borrow owner's Vault reference")
+        let vaultRef = account.storage.borrow<auth(FungibleToken.Withdraw) &{FungibleToken.Provider}>(from: FlovatarDustToken.VaultStoragePath) ?? panic("Could not borrow owner's Vault reference")
         // withdraw tokens from the buyer's Vault
         self.temporaryVault <- vaultRef.withdraw(amount: amount)
     }

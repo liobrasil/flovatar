@@ -1,9 +1,6 @@
-import Flobot from 0xFlovatar
-import NonFungibleToken from 0xNonFungible
-import FungibleToken from 0xFungible
-import FlowToken from 0xFlowToken
+import "Flobot"
 
-access(all)fun main(
+access(all) fun main(
     body: UInt64,
     head: UInt64,
     arms: UInt64,

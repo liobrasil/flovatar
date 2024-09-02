@@ -11,7 +11,7 @@ import FlovatarMarketplace from "../contracts/FlovatarMarketplace.cdc"
 
 // This script returns the available websites
 
-access(all)fun main() : [FlovatarComponentTemplate.ComponentTemplateData] {
+pub fun main() : [FlovatarComponentTemplate.ComponentTemplateData] {
 
     return FlovatarComponentTemplate.getComponentTemplates()
 

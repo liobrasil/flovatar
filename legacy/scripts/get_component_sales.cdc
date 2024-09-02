@@ -11,7 +11,7 @@ import FlovatarMarketplace from "../contracts/FlovatarMarketplace.cdc"
 
 // This script returns the available Flovatar Component sales
 
-access(all)fun main(address:Address) : [FlovatarMarketplace.FlovatarComponentSaleData] {
+pub fun main(address:Address) : [FlovatarMarketplace.FlovatarComponentSaleData] {
 
     return FlovatarMarketplace.getFlovatarComponentSales(address: address)
 

@@ -1,13 +1,6 @@
 import "Flovatar"
-import "FlovatarComponent" 
-import "FlovatarComponentTemplate"
-import "FlovatarPack"
-import "FlovatarMarketplace"
-import "NonFungibleToken"
-import "FungibleToken"
-import "FlowToken"
 
-access(all)fun main(
+access(all) fun main(
     body: UInt64,
     hair: UInt64,
     facialHair: UInt64?,

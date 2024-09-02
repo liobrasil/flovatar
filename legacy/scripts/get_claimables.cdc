@@ -26,7 +26,7 @@ access(all)struct Claimables {
   }
 }
 
-access(all)fun main(address:Address) : Claimables {
+pub fun main(address:Address) : Claimables {
     // get the accounts' public address objects
     let status = Claimables(address)
     let account = getAccount(address)

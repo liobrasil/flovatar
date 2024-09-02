@@ -21,7 +21,7 @@ access(all)struct Collections {
   }
 }
 
-access(all)fun main(address:Address) : Collections {
+pub fun main(address:Address) : Collections {
     // get the accounts' public address objects
     let account = getAccount(address)
     let status = Collections(address)

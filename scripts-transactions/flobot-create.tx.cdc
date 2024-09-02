@@ -1,8 +1,9 @@
-import Flobot, Flovatar, FlovatarComponent, FlovatarComponentTemplate, FlovatarPack, FlovatarMarketplace from 0xFlovatar
-import NonFungibleToken from 0xNonFungible
-import FungibleToken from 0xFungible
-import FlowToken from 0xFlowToken
-import MetadataViews from 0xMetadataViews
+import "Flobot"
+import "FlovatarComponent"
+import "NonFungibleToken"
+import "FungibleToken"
+import "FlowToken"
+import "MetadataViews"
 
 // This transaction will create a new Flobot by burning a Flobot Kit of the necessary rarity
 transaction(
@@ -17,22 +18,25 @@ transaction(
 
 
     let flobotCollection: &Flobot.Collection
-    let flobotComponentCollection: &FlovatarComponent.Collection
+    let flobotComponentCollection: auth(NonFungibleToken.Withdraw) &FlovatarComponent.Collection
 
     let flobotkitNFT: @[FlovatarComponent.NFT]
     let backgroundNFT: @FlovatarComponent.NFT?
     let accountAddress: Address
 
-    prepare(account: AuthAccount) {
+    prepare(account: auth(Storage, Capabilities) &Account) {
 
-        let flobotCap = account.getCapability<&{Flobot.CollectionPublic}>(Flobot.CollectionPublicPath)
+        let flobotCap = account.capabilities.get<&{Flobot.CollectionPublic}>(Flobot.CollectionPublicPath)
         if(!flobotCap.check()) {
-            account.save<@NonFungibleToken.Collection>(<- Flobot.createEmptyCollection(), to: Flobot.CollectionStoragePath)
-            account.link<&Flobot.Collection{Flobot.CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection}>(Flobot.CollectionPublicPath, target: Flobot.CollectionStoragePath)
+            account.storage.save<@{NonFungibleToken.Collection}>(<- Flobot.createEmptyCollection(nftType: Type<@Flobot.NFT>()), to: Flobot.CollectionStoragePath)
+            account.capabilities.unpublish(Flobot.CollectionPublicPath)
+            account.capabilities.publish(
+                account.capabilities.storage.issue<&Flobot.Collection>(Flobot.CollectionStoragePath),
+                at: Flobot.CollectionPublicPath)
         }
 
-        self.flobotCollection = account.borrow<&Flobot.Collection>(from: Flobot.CollectionStoragePath)!
-        self.flobotComponentCollection = account.borrow<&FlovatarComponent.Collection>(from: FlovatarComponent.CollectionStoragePath)!
+        self.flobotCollection = account.storage.borrow<&Flobot.Collection>(from: Flobot.CollectionStoragePath)!
+        self.flobotComponentCollection = account.storage.borrow<auth(NonFungibleToken.Withdraw) &FlovatarComponent.Collection>(from: FlovatarComponent.CollectionStoragePath)!
 
 
         if(background != nil){

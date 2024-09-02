@@ -1,7 +1,6 @@
-import Flovatar, FlovatarComponent, FlovatarComponentTemplate, FlovatarPack, FlovatarMarketplace from 0xFlovatar
-import NonFungibleToken from 0xNonFungible
-import FungibleToken from 0xFungible
-import FlowToken from 0xFlowToken
+import "Flovatar"
+import "FlovatarComponent"
+import "NonFungibleToken"
 
 // This transaction will create a new Flovatar by burning a Spark and all the necessary rarity Boosters
 transaction(
@@ -24,7 +23,7 @@ transaction(
 
 
     let flovatarCollection: &Flovatar.Collection
-    let flovatarComponentCollection: &FlovatarComponent.Collection
+    let flovatarComponentCollection: auth(NonFungibleToken.Withdraw) &FlovatarComponent.Collection
 
     let sparkNFT: @FlovatarComponent.NFT
     let accessoryNFT: @FlovatarComponent.NFT?
@@ -36,10 +35,10 @@ transaction(
     let legendaryBoostNFT: @[FlovatarComponent.NFT]
     let accountAddress: Address
 
-    prepare(account: AuthAccount) {
-        self.flovatarCollection = account.borrow<&Flovatar.Collection>(from: Flovatar.CollectionStoragePath)!
+    prepare(account: auth(Storage) &Account) {
+        self.flovatarCollection = account.storage.borrow<&Flovatar.Collection>(from: Flovatar.CollectionStoragePath)!
 
-        self.flovatarComponentCollection = account.borrow<&FlovatarComponent.Collection>(from: FlovatarComponent.CollectionStoragePath)!
+        self.flovatarComponentCollection = account.storage.borrow<auth(NonFungibleToken.Withdraw) &FlovatarComponent.Collection>(from: FlovatarComponent.CollectionStoragePath)!
 
         self.rareBoostNFT <-[]
         for componentId in rareBoost {
